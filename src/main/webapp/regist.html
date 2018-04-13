@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Join Us</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/layout/layout.css">
+    <script src="/layui/layui.js"></script>
+</head>
+<body>
+<div class="top-nav layui-bg-black">
+    <div class="layui-main layui-row">
+        <div class="layui-col-xs1">
+            <a href="/chat/"><img class="top-nav-logo" src="/img/logo.png"></a>
+        </div>
+        <div class="layui-col-xs8">
+            <ul class="top-nav-menu layui-nav">
+                <li class="layui-nav-item"><a href="/">Choice</a></li>
+                <li class="layui-nav-item layui-this">
+                    <a href="javascript:;">首页</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="">选项1</a></dd>
+                        <dd><a href="">选项2</a></dd>
+                        <dd><a href="">选项3</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">解决方案</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="">移动模块</a></dd>
+                        <dd><a href="">后台模版</a></dd>
+                        <dd class="layui-this"><a href="">选中项</a></dd>
+                        <dd><a href="">电商平台</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+        <div class="layui-col-xs3">
+            <ul class="top-nav-user layui-nav">
+                <li class="layui-nav-item">
+                    <a href="">个人中心<span class="layui-badge">9</span></a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href=""><img src="http://t.cn/RCzsdCq" class="layui-nav-img">我</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;">修改信息</a></dd>
+                        <dd><a href="javascript:;">安全管理<span class="layui-badge-dot"></span></a></dd>
+                        <dd><a href="javascript:;">退了</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="sec-nav">
+    <div class="layui-main layui-row">
+        <div class="layui-col-xs4">
+            <span class="sec-nav-where layui-breadcrumb" lay-separator="/">
+                <a href="/">Chiose</a>
+                <a><cite>注册</cite></a>
+            </span>
+        </div>
+        <div class="layui-col-xs4">
+            <span class="sec-nav-list layui-breadcrumb" lay-separator="|">
+              <a href="/chat">交流</a>
+              <a href="/skill">技艺</a>
+              <a href="/game">游戏</a>
+              <a href="/resource">共享</a>
+              <a href="/blog">博客</a>
+              <a href="secret">秘密</a>
+            </span>
+        </div>
+        <div class="layui-col-xs3">
+            <input type="text" class="layui-input search_input" lay-verify="title" autocomplete="off"
+                   placeholder="请输入...">
+        </div>
+        <div class="layui-col-xs1">
+            <a class="layui-icon layui-btn search_btn">&#xe615;</a>
+        </div>
+    </div>
+</div>
+<div class="main-content layui-main layui-row">
+    <div class="layui-col-xs4">
+        <img src="">
+    </div>
+    <div class="layui-col-xs8">
+
+    </div>
+</div>
+<div class="layui-footer"></div>
+<script>
+    //注意：导航 依赖 element 模块，否则无法进行功能性操作
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+</script>
+</body>
+</html>

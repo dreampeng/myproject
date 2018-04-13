@@ -1,0 +1,54 @@
+body {
+    background-color: #eeeeee;
+}
+
+/*logo*/
+.top-nav .top-nav-logo {
+    width: 100px;
+    height: 45px;
+    margin-top: 9px;
+}
+
+/*用户专栏*/
+.top-nav .top-nav-user {
+    margin-left: 17%;
+}
+
+/*第二导航*/
+.sec-nav {
+    background-color: white;
+}
+
+/*第二导航 当前地址*/
+.sec-nav .sec-nav-where {
+    margin-top: 10px !important;
+    font-size: 30px;
+}
+
+/*第二导航 列表*/
+.sec-nav .sec-nav-list {
+    font-size: 30px;
+}
+
+/*第二导航 搜索输入*/
+.sec-nav .search_input {
+    width: 150px;
+    margin-left: 50%;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+/*第二导航 搜索按钮*/
+.sec-nav .search_btn {
+    margin-top: 3px;
+    font-size: 25px;
+    margin-left: 15%;
+}
+
+.main-content {
+    border-radius: 5px;
+    margin-top: 5px;
+    min-height: 760px;
+    background-color: white;
+    padding: 5px;
+}

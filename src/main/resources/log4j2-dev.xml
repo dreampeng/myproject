@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- status=debug 可以查看log4j的装配过程  off-->
+<configuration status="off" monitorInterval="1800">
+    <properties>
+        <!-- 日志备份目录 -->
+        <property name="log_pattern">%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread][%file:%line] - %msg%n</property>
+        <property name="basePath">/home/dnzx/applogs</property>
+        <property name="BACKUP_HOME">{LOG_HOME}/backup</property>
+        <property name="file_name">${basePath}/car</property>
+        <property name="rolling_file_name">${BACKUP_HOME}/app-%d{yyyy-MM-dd}-%i</property>
+        <property name="every_file_size">10M</property><!-- 日志切割的最小单位 -->
+        <property name="log_level">debug</property><!-- 日志输出级别 -->
+    </properties>
+    <appenders>
+        <!--这个输出控制台的配置 -->
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） -->
+            <ThresholdFilter level="trace" onMatch="ACCEPT"
+                             onMismatch="DENY" />
+            <!--这个都知道是输出日志的格式 -->
+            <PatternLayout
+                    pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n" />
+        </Console>
+        <!--这个会打印出所有的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档 -->
+        <!-- 按月生成归档日志，可以使用 filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz" -->
+        <!-- 显示error级别之外的信息 -->
+        <!-- 配置日志输出格式charset,UTF8编码,GBK编码,ASCII编码格式 -->
+        <RollingFile name="RollingFile_Info" fileName="${file_name}.log" filePattern="${file_name}.log.gz">
+            <PatternLayout charset="utf-8" pattern="%d{yyyy-MM-dd HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n" />
+            <SizeBasedTriggeringPolicy size="${every_file_size}" />
+            <Filters>
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL" />
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+        </RollingFile>
+        <!--如果需要配置多个Rollingfile地址，还需要在root下添加appender-ref ref="RollingFile1"/>
+            只显示error级别的信息 -->
+        <RollingFile name="RollingFile_Error" fileName="${file_name}_Error.log" filePattern="${file_name}_Error.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n" />
+            <SizeBasedTriggeringPolicy size="${every_file_size}" />
+            <Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+        </RollingFile>
+
+        <Async name="Async"  includeLocation="true">
+            <appender-ref ref="RollingFile_Info" />
+            <appender-ref ref="RollingFile_Error" />
+            <appender-ref ref="Console" />
+            <!--建立一个默认的root的logger，需要在root的level中指定输出的级别， -->
+        </Async>
+    </appenders>
+    <loggers>
+
+        <logger name="org.springframework.scheduling" level="info">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+        <!-- 3rdparty Loggers -->
+        <logger name="org.springframework.core" level="debug">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+        <logger name="org.springframework.beans" level="debug">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+        <logger name="org.springframework.context" level="debug">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+        <logger name="org.springframework.web" level="debug">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+        <logger name="org.springframework.boot" level="debug">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+        <logger name="org.jboss.netty" level="warn">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+        <logger name="org.apache.http" level="warn">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+        <!-- MyIbatis日志配置 -->
+        <logger name="org.apache.ibatis" level="debug">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+        <logger name="com.ibatis.common.jdbc.SimpleDataSource" level="debug">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+        <logger name="org.apache.ibatis.mapping.MappedStatement" level="debug">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+        <logger name="org.apache.ibatis.jdbc.ScriptRunner" level="debug">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+        <logger name="com.alibaba.druid" level="debug" additivity="false">
+            <appender-ref ref="Async" level="info" />
+        </logger>
+        <!--自定义日志配置 -->
+        <logger name="com.stylefeng.guns" level="debug" additivity="false">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+
+
+        <!--SQL执行日志配置 -->
+        <logger name="java.sql.Connection" level="debug">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+        <logger name="java.sql.Statement" level="debug">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+        <logger name="java.sql.ResultSet" level="debug">
+            <appender-ref ref="Async" level="trace" />
+        </logger>
+        <!-- Root Logger -->
+        <root level="${log_level}">
+            <!-- <appender-ref ref="Async"/> -->
+            <!-- <appender-ref ref="Console" /> -->
+        </root>
+    </loggers>
+</configuration>
