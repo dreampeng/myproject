@@ -1,7 +1,7 @@
 package com.noadd.myapp.domain.entity;
 
 public class PreValidateCode {
-    private String uid;
+    private String uuid;
     private String sendType;
     private String sendTo;
     private String code;
@@ -9,12 +9,12 @@ public class PreValidateCode {
     private Long createTime;
     private Long expiryTime;
 
-    public String getUid() {
-        return uid;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getSendType() {
@@ -64,4 +64,5 @@ public class PreValidateCode {
     public void setExpiryTime(Long expiryTime) {
         this.expiryTime = expiryTime;
     }
+
 }

@@ -26,6 +26,8 @@ $(function () {
 function sendValidateCode() {
     var data = {};
     data.email = $('#eamil').val();
+    data.sendType = '0';
+    data.codeType = '0';
     sendAjax("/validate/getcode", data, function (retData) {
 
     }, function (retData) {
