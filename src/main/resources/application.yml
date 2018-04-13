@@ -19,6 +19,9 @@ spring:
             enable: true
           socketFactory:
             class: javax.net.ssl.SSLSocketFactory
+  mvc:
+    favicon:
+      enabled: false
 mail:
   fromMail:
     addr: odty@qq.com         #以谁来发送邮件

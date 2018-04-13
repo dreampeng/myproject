@@ -6,7 +6,10 @@
     <title>Join Us</title>
     <link rel="stylesheet" href="/layui/css/layui.css">
     <link rel="stylesheet" href="/css/layout/layout.css">
-    <script src="/layui/layui.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/js/tools.js"></script>
+    <script type="text/javascript" src="/layui/layui.js"></script>
+    <script type="text/javascript" src="/js/regist.js"></script>
 </head>
 <body>
 <div class="top-nav layui-bg-black">
@@ -80,20 +83,86 @@
         </div>
     </div>
 </div>
-<div class="main-content layui-main layui-row">
-    <div class="layui-col-xs4">
-        <img src="">
-    </div>
-    <div class="layui-col-xs8">
+<div class="main-content layui-main">
+    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+        <ul class="layui-tab-title">
+            <a href="/login.html">
+                <li>登录</li>
+            </a>
+            <li class="layui-this">注册</li>
+        </ul>
+        <div class="layui-tab-content" style="height: 100px;">
+            <div class="layui-tab-item layui-show  layui-row">
+                <div class="layui-col-xs5">
+                    <form class="layui-form layui-form-pane">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="userName" lay-verify="required" placeholder="请输入用户名"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">6-12位(数字/字母/_ )</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">密码</label>
+                            <div class="layui-input-inline">
+                                <input type="password" name="userPass" lay-verify="required" placeholder="请输入密码"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">请填写6到12位密码</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">确认密码</label>
+                            <div class="layui-input-inline">
+                                <input type="password" name="reUserPass" lay-verify="required" placeholder="请再次输入密码"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">e-mail</label>
+                            <div class="layui-input-inline">
+                                <input type="password" name="email" id="eamil" lay-verify="required" placeholder="请输入自己的邮箱"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                            <a class="layui-icon layui-btn layui-btn-normal search_btn" id="getValidateCode"><i
+                                    class="layui-icon">&#xe6b2;</i> 获取</a>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">验证码</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="email" lay-verify="required" placeholder="请输入收到的验证码"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-inline">
+                                <input type="checkbox" name="useTerms" lay-skin="primary"
+                                       title="" checked="">
+                                <a href="/instructions/terms.html" target="_blank"
+                                   style="position: relative; top: 4px; left: 5px; color: #999;">同意用户服务条款</a>
+                            </div>
+                        </div>
 
+                        <div class="layui-form-item">
+                            <div class="layui-input-inline">
+                                <a class="layui-icon layui-btn search_btn" id="submit"><i
+                                        class="layui-icon">&#xe618;</i> 加入</a>
+                            </div>
+                            <div class="layui-input-inline">
+                                <a class="layui-icon layui-btn layui-btn-warm search_btn" id="reset"><i
+                                        class="layui-icon">&#x1006;</i> 重置</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="layui-col-xs6">
+                    <img src="">
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 <div class="layui-footer"></div>
-<script>
-    //注意：导航 依赖 element 模块，否则无法进行功能性操作
-    layui.use('element', function () {
-        var element = layui.element;
-    });
-</script>
 </body>
 </html>
