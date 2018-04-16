@@ -18,31 +18,24 @@ public class MyMailService {
     @Value("${mail.fromMail.addr}")
     private String from;
 
-    public void sendSimpleMail(String to, String title, String content) {
+    public void sendSimpleMail(String to, String title, String content) throws MessagingException {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
         message.setTo(to);
         message.setSubject(title);
         message.setText(content);
-        try {
-            mailSender.send(message);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        mailSender.send(message);
     }
 
-    public void sendHtmlMail(String to, String subject, String content) {
+    public void sendHtmlMail(String to, String subject, String content) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
 
-        try {
-            //true表示需要创建一个multipart message
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom(from);
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(content, true);
-            mailSender.send(message);
-        } catch (MessagingException e) {
-        }
+        //true表示需要创建一个multipart message
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom(from);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(content, true);
+        mailSender.send(message);
     }
 }

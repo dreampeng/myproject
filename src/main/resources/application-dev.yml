@@ -8,5 +8,4 @@ spring:
     username: root
     password: Pp19953.1@
 logging:
-  config:
-    classpath: log4j2-dev.xml
+  config: classpath:log4j2-dev.xml

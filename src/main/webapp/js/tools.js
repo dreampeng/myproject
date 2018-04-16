@@ -7,7 +7,7 @@
  * @param sync  是否异步传输 默认是true是异步。 false就是同步传输
  */
 
-function sendAjax(url, data, funsu, funer, sync) {
+function sendAjax(url, data, funsu, sync) {
     var shadow;
     $.ajax({
         sync: sync,
@@ -22,17 +22,52 @@ function sendAjax(url, data, funsu, funer, sync) {
         complete: function () {
             layer.close(shadow);
         },
-        error: function (data) {
-            if (data == undefined || data == null) {
-                layer.msg('网络链接异常', {
-                    time: 5000, //20s后自动关闭
-                    btn: ['哦']
-                });
-            }
-            funer(data);
+        error: function () {
+            msgError("系统错误,请联系管理员");
         },
         success: function (data) {
             funsu(data);
         }
     });
+}
+
+/**
+ *消息
+ * @param content
+ */
+function msgInfo(content) {
+    layer.msg(content, {
+        icon: 6,
+        time: 2000
+    });
+}
+
+function msgWarn(content) {
+    layer.msg(content, {
+        icon: 7,
+        time: 2000
+    });
+}
+
+function msgError(content) {
+    layer.msg(content, {
+        icon: 5,
+        time: 2000
+    });
+}
+
+function msgTips(content, id) {
+    layer.tips(content, '#' + id);
+}
+
+/**
+ * 表单清空
+ * @param id
+ */
+function formReset(id) {
+    var target = $('#' + id);
+    var t = target[0];
+    if (t) {
+        t.reset();
+    }
 }
