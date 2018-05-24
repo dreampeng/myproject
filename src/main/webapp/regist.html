@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/css/layout/layout.css">
     <script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="/js/tools.js"></script>
+    <script type="text/javascript" src="/js/regular.js"></script>
     <script type="text/javascript" src="/layui/layui.js"></script>
     <script type="text/javascript" src="/js/regist.js"></script>
 </head>
@@ -98,10 +99,10 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label">用户名</label>
                             <div class="layui-input-inline">
-                                <input type="text" id="userName" lay-verify="required" placeholder="请输入用户名"
+                                <input type="text" id="userName" lay-verify="required" placeholder="请输入用户名(字母开头)"
                                        autocomplete="off" class="layui-input">
                             </div>
-                            <div class="layui-form-mid layui-word-aux">6-12位(数字/字母/_ )</div>
+                            <div class="layui-form-mid layui-word-aux">6-12位(字母/数字/_ )</div>
                         </div>
                         <div class="layui-form-item">
                             <label class="layui-form-label">密码</label>
@@ -109,7 +110,7 @@
                                 <input type="password" id="userPass" lay-verify="required" placeholder="请输入密码"
                                        autocomplete="off" class="layui-input">
                             </div>
-                            <div class="layui-form-mid layui-word-aux">请填写6到12位密码</div>
+                            <div class="layui-form-mid layui-word-aux">6-12位(字母/数字/_ )</div>
                         </div>
                         <div class="layui-form-item">
                             <label class="layui-form-label">确认密码</label>
@@ -121,7 +122,7 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label">e-mail</label>
                             <div class="layui-input-inline">
-                                <input type="text"  id="eamil" lay-verify="required" placeholder="请输入自己的邮箱"
+                                <input type="text"  id="eamil" lay-verify="required" placeholder="请输入自己的QQ邮箱"
                                        autocomplete="off" class="layui-input">
                             </div>
                             <a class="layui-icon layui-btn layui-btn-normal search_btn" id="getValidateCode"><i

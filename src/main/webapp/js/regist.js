@@ -53,32 +53,47 @@ function submit() {
     data.reUserPass = $('#reUserPass').val();
     data.email = $('#eamil').val();
     data.validCode = $('#validCode').val();
-    if (data.userName == "" || !data.userName) {
-        msgTips("请填写用户名", 'userName');
-        return;
-    }
-    if (data.userPass == "" || !data.userPass) {
-        msgTips("请填写密码", 'userPass');
-        return;
-    }
-    if (data.userPass != data.reUserPass) {
-        msgTips("两次输入密码不一样", 'reUserPass');
-        return;
-    }
-    if (data.email == "" || !data.email) {
-        msgTips("请填写邮箱", 'eamil');
-        return;
-    }
-    if (data.validCode == "" || !data.validCode) {
-        msgTips("请输入收到的验证码", 'validCode');
+    var vaild = validForm(data);
+    if(!vaild.result){
         return;
     }
     sendAjax("/user/regist", data, function (retData) {
         var retCode = retData.code;
         if (retCode == "0000") {
-            msgInfo("验证码已发送,请注意查收");
+            msgInfo("欢迎加入！");
         } else {
             msgWarn(retData.msg);
         }
     }, true);
+}
+
+function validForm() {
+    if (data.userName == "" || !data.userName) {
+        msgTips("请填写用户名", 'userName');
+        return false;
+    }
+    if (regular(data.userName,regularExpression.userName)) {
+        msgTips("用户名格式不正确", 'userName');
+        return false;
+    }
+    if (data.userPass == "" || !data.userPass) {
+        msgTips("请填写密码", 'userPass');
+        return false;
+    }
+    if (regular(data.userPass,regularExpression.userPass)) {
+        msgTips("密码格式不正确", 'userName');
+        return false;
+    }
+    if (data.userPass != data.reUserPass) {
+        msgTips("两次输入密码不一样", 'reUserPass');
+        return false;
+    }
+    if (data.email == "" || !data.email) {
+        msgTips("请填写邮箱", 'eamil');
+        return false;
+    }
+    if (data.validCode == "" || !data.validCode) {
+        msgTips("请输入收到的验证码", 'validCode');
+        return false;
+    }
 }
