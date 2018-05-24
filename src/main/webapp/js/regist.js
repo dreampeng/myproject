@@ -52,7 +52,7 @@ function submit() {
     data.userPass = $('#userPass').val();
     data.reUserPass = $('#reUserPass').val();
     data.email = $('#eamil').val();
-    data.vaildCode = $('#vaildCode').val();
+    data.validCode = $('#validCode').val();
     if (data.userName == "" || !data.userName) {
         msgTips("请填写用户名", 'userName');
         return;
@@ -69,8 +69,8 @@ function submit() {
         msgTips("请填写邮箱", 'eamil');
         return;
     }
-    if (data.vaildCode == "" || !data.vaildCode) {
-        msgTips("请输入收到的验证码", 'vaildCode');
+    if (data.validCode == "" || !data.validCode) {
+        msgTips("请输入收到的验证码", 'validCode');
         return;
     }
     sendAjax("/user/regist", data, function (retData) {
