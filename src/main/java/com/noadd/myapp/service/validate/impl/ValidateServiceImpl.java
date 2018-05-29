@@ -38,7 +38,23 @@ public class ValidateServiceImpl implements ValidateService {
         validateCode.setCodeType(codeType);
         validateCode.setSendTo(sendTo);
         validateCode.setSendType(sendType);
+        validateCode.setIsUsed(0);
         preValidateCodeMap.insertValidateCode(validateCode);
         return result;
+    }
+
+
+    @Override
+    public boolean validateCode(String validCode, String sendTo, String codeType) {
+        PreValidateCode validateCode = preValidateCodeMap.validateCode(sendTo, codeType);
+        if (validateCode == null) {
+            return false;
+        }
+        if (validCode.equals(validateCode.getCode()) && TimeUtil.getTimestamp() < validateCode.getExpiryTime()
+                && validateCode.getIsUsed() == 0) {
+            preValidateCodeMap.updateValidateCode(validateCode.getUuid());
+            return true;
+        }
+        return false;
     }
 }

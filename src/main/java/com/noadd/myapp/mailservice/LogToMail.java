@@ -19,7 +19,7 @@ public class LogToMail {
             sOut += "\tat " + s + "\r\n";
         }
         myMailServicel.sendSimpleMail(to, "错误日志" + TimeUtil.getCurrentDate(null), content +
-                "\n错误详情：" +sOut);
+                 "\nDetailMessage"+ e.getMessage()+ "\n错误详情：" +sOut);
     }
 
     public void warn(String content) {

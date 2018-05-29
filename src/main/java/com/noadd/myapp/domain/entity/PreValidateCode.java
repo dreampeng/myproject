@@ -6,8 +6,17 @@ public class PreValidateCode {
     private String sendTo;
     private String code;
     private String codeType;
+    private int isUsed;
     private Long createTime;
     private Long expiryTime;
+
+    public int getIsUsed() {
+        return isUsed;
+    }
+
+    public void setIsUsed(int isUsed) {
+        this.isUsed = isUsed;
+    }
 
     public String getUuid() {
         return uuid;

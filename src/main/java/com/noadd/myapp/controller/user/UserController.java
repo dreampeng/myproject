@@ -2,7 +2,9 @@ package com.noadd.myapp.controller.user;
 
 import com.noadd.myapp.mailservice.LogToMail;
 import com.noadd.myapp.service.user.UserService;
+import com.noadd.myapp.service.validate.ValidateService;
 import com.noadd.myapp.util.MessageUtil;
+import com.noadd.myapp.util.ParamUtil;
 import com.noadd.myapp.util.baseUtil.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,8 @@ public class UserController {
     private LogToMail logToMail;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ValidateService validateService;
 
     /**
      * 判断用户名是否已注册
@@ -54,17 +58,34 @@ public class UserController {
     }
 
 
+    /**
+     * 用户注册
+     *
+     * @param userName
+     * @param userPass
+     * @param email
+     * @param validCode
+     * @return
+     */
     @PostMapping("/regist")
-    public Map<String, Object> login(String userName, String userPass, String email, String validCode) {
+    public Map<String, Object> regist(String userName, String userPass, String email, String validCode) {
         Map<String, Object> out = new HashMap<>();
         String code = "0000";
         if (StringUtil.isEmpty(userName, userPass, email, validCode)) {
             code = "0001";
         } else {
             try {
-
+                if (!ParamUtil.registvalidate(userName, userPass, email)) {
+                    code = "0002";
+                } else if (userService.isReg(userName)) {
+                    code = "0100";
+                } else if (validateService.validateCode(validCode, email, "0")) {
+                    userService.regUser(userName, userPass, email);
+                } else {
+                    code = "1002";
+                }
             } catch (Exception e) {
-                logToMail.error(this.getClass().getName() + "类 login(String userName, String userPass, String email, String validCode)," +
+                logToMail.error(this.getClass().getName() + "类 regist(String userName, String userPass, String email, String validCode)," +
                         "(" + userName + "," + userPass + "," + email + "," + validCode + ")", e);
                 code = "1001";
             }

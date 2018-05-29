@@ -19,6 +19,6 @@ public class RegularUtil {
         Pattern r = Pattern.compile(pattern);
         // 现在创建 matcher 对象
         Matcher m = r.matcher(str);
-        return m.find();
+        return !m.find();
     }
 }

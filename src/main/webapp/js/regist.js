@@ -46,10 +46,10 @@ function isReg() {
         var retCode = retData.code;
         if (retCode == "0100") {
             msgTips("用户名已存在!", 'userName');
-        } else if(retCode != "0000") {
+        } else if (retCode != "0000") {
             msgWarn(retData.msg);
         }
-    }, true,false);
+    }, true, false);
 }
 
 function sendValidateCode() {
@@ -83,9 +83,8 @@ function submit() {
     data.reUserPass = $('#reUserPass').val();
     data.email = $('#eamil').val();
     data.validCode = $('#validCode').val();
-    var vaild = validForm(data);
-    if (!vaild.result) {
-        return;
+    if (!validForm(data)) {
+        return false;
     }
     sendAjax("/user/regist", data, function (retData) {
         var retCode = retData.code;
@@ -97,7 +96,7 @@ function submit() {
     }, true);
 }
 
-function validForm() {
+function validForm(data) {
     if (data.userName == "" || !data.userName) {
         msgTips("请填写用户名", 'userName');
         return false;
@@ -126,4 +125,5 @@ function validForm() {
         msgTips("请输入收到的验证码", 'validCode');
         return false;
     }
+    return true;
 }
