@@ -36,7 +36,7 @@ public class TimeUtil {
      *
      * @return
      */
-    public static Date getCurrentDate() {
+    public static Date getDate() {
         return new Date();
     }
 

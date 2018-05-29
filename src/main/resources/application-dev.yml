@@ -7,5 +7,3 @@ spring:
     url: jdbc:mysql://47.106.117.18:3306/odty?useSSL=false&autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
     username: root
     password: Pp19953.1@
-logging:
-  config: classpath:log4j2-dev.xml

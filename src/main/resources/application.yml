@@ -25,3 +25,5 @@ spring:
 mail:
   fromMail:
     addr: odty@qq.com         #以谁来发送邮件
+  logMail:                    #日志发送地址
+    addr: 815566704@qq.com

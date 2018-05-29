@@ -17,9 +17,7 @@ import java.util.List;
 @EnableScheduling
 public class MyappApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(MyappApplication.class, args);
-    }
+
 
     @Bean
     public FilterRegistrationBean filterRegistrationBean() {

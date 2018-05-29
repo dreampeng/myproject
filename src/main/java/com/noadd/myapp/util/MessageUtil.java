@@ -12,9 +12,12 @@ public class MessageUtil {
             case "0001":
                 msg = "参数获取错误咯";
                 break;
-            case "1001":
-                msg = "验证码获取失败";
+            case "0100":
+                msg = "用户名已存在";
                 break;
+            case "1001":
+            msg = "验证码获取失败";
+            break;
             default:
                 msg = "发现未定义的错误:" + code;
                 break;

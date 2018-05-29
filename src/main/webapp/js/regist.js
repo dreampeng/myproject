@@ -1,3 +1,4 @@
+//-----------------------------layui start-----------------------------------
 //注意：导航 依赖 element 模块，否则无法进行功能性操作
 layui.use('element', function () {
     var element = layui.element;
@@ -12,6 +13,8 @@ layui.use('form', function () {
     //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
     form.render();
 });
+//-----------------------------layui end-----------------------------------
+var canReg = false;
 $(function () {
     //获取验证码按钮
     $("#getValidateCode").on('click', function () {
@@ -25,7 +28,29 @@ $(function () {
     $("#reset").on('click', function () {
         formReset('form_regist');
     });
+    $("#userName").blur(function () {
+        isReg();
+    });
 });
+
+function isReg() {
+    var userName = $('#userName').val();
+    if (userName == "" || !userName) {
+        return false;
+    }
+    if (regular(userName, regularExpression.userName)) {
+        msgTips("用户名格式不正确", 'userName');
+        return false;
+    }
+    sendAjax("/user/isreg", {"userName": userName}, function (retData) {
+        var retCode = retData.code;
+        if (retCode == "0100") {
+            msgTips("用户名已存在!", 'userName');
+        } else if(retCode != "0000") {
+            msgWarn(retData.msg);
+        }
+    }, true,false);
+}
 
 function sendValidateCode() {
     var data = {};
@@ -47,6 +72,11 @@ function sendValidateCode() {
 }
 
 function submit() {
+    if (canReg) {
+        msgTips("用户名已存在！", 'userName');
+        return false;
+    }
+
     var data = {};
     data.userName = $('#userName').val();
     data.userPass = $('#userPass').val();
@@ -54,7 +84,7 @@ function submit() {
     data.email = $('#eamil').val();
     data.validCode = $('#validCode').val();
     var vaild = validForm(data);
-    if(!vaild.result){
+    if (!vaild.result) {
         return;
     }
     sendAjax("/user/regist", data, function (retData) {
@@ -72,7 +102,7 @@ function validForm() {
         msgTips("请填写用户名", 'userName');
         return false;
     }
-    if (regular(data.userName,regularExpression.userName)) {
+    if (regular(data.userName, regularExpression.userName)) {
         msgTips("用户名格式不正确", 'userName');
         return false;
     }
@@ -80,7 +110,7 @@ function validForm() {
         msgTips("请填写密码", 'userPass');
         return false;
     }
-    if (regular(data.userPass,regularExpression.userPass)) {
+    if (regular(data.userPass, regularExpression.userPass)) {
         msgTips("密码格式不正确", 'userName');
         return false;
     }

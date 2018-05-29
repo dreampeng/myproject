@@ -1,5 +1,6 @@
 package com.noadd.myapp.controller.validate;
 
+import com.noadd.myapp.mailservice.LogToMail;
 import com.noadd.myapp.service.validate.ValidateService;
 import com.noadd.myapp.util.MessageUtil;
 import com.noadd.myapp.util.baseUtil.StringUtil;
@@ -21,8 +22,8 @@ import java.util.Map;
 @RequestMapping("/validate")
 @Transactional
 public class ValidateController {
-    Logger logger = LoggerFactory.getLogger(this.getClass());
-
+    @Autowired
+    private LogToMail logToMail;
     @Autowired
     ValidateService validateService;
 
@@ -45,7 +46,7 @@ public class ValidateController {
             try {
                 validateService.createValidateCode(sendType, sendTo, codeType);
             } catch (Exception e) {
-                logger.error("验证码获取失败," +
+                logToMail.error("验证码获取失败," +
                         "\n参数(String sendType, String sendTo, String codeType)," +
                         "\n(" + sendType + "," + sendTo + "," + codeType + ")", e);
                 code = "1001";
