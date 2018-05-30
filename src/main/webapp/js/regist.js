@@ -54,12 +54,16 @@ function isReg() {
 
 function sendValidateCode() {
     var data = {};
-    data.sendTo = $('#eamil').val();
+    data.sendTo = $('#email').val();
     data.sendType = '0';
     data.codeType = '0';
     if (data.sendTo == "" || !data.sendTo) {
-        msgTips("你还没有填写呢", 'eamil');
+        msgTips("你还没有填写呢", 'email');
         return;
+    }
+    if (regular(data.sendTo, regularExpression.email)) {
+        msgTips("邮箱格式不正确", 'email');
+        return false;
     }
     sendAjax("/validate/getcode", data, function (retData) {
         var retCode = retData.code;
@@ -81,7 +85,7 @@ function submit() {
     data.userName = $('#userName').val();
     data.userPass = $('#userPass').val();
     data.reUserPass = $('#reUserPass').val();
-    data.email = $('#eamil').val();
+    data.email = $('#email').val();
     data.validCode = $('#validCode').val();
     if (!validForm(data)) {
         return false;
@@ -109,6 +113,10 @@ function validForm(data) {
         msgTips("请填写密码", 'userPass');
         return false;
     }
+    if (data.userPass != "" && data.userPass == data.userName) {
+        msgTips("不能和用户名相同哦", 'userPass');
+        return false;
+    }
     if (regular(data.userPass, regularExpression.userPass)) {
         msgTips("密码格式不正确", 'userName');
         return false;
@@ -118,7 +126,11 @@ function validForm(data) {
         return false;
     }
     if (data.email == "" || !data.email) {
-        msgTips("请填写邮箱", 'eamil');
+        msgTips("请填写邮箱", 'email');
+        return false;
+    }
+    if (regular(data.email, regularExpression.email)) {
+        msgTips("邮箱格式不正确", 'email');
         return false;
     }
     if (data.validCode == "" || !data.validCode) {

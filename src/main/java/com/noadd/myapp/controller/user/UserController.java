@@ -9,6 +9,7 @@ import com.noadd.myapp.util.baseUtil.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +34,6 @@ public class UserController {
      *
      * @param userName
      * @return
-     * @throws InterruptedException
      */
     @PostMapping("/isreg")
     public Map<String, Object> isReg(String userName) {
@@ -49,7 +49,35 @@ public class UserController {
             } catch (Exception e) {
                 logToMail.error(this.getClass().getName() + "类 isReg(String userName)," +
                         "(" + userName + ")", e);
-                code = "1001";
+                code = "9999";
+            }
+        }
+        out.put("code", code);
+        out.put("msg", MessageUtil.sysCodeMsg(code));
+        return out;
+    }
+
+    /**
+     * 判断用户名是否已注册
+     *
+     * @param email 邮箱
+     * @return
+     */
+    @PostMapping("/isregemail")
+    public Map<String, Object> isRegEmail(String email) {
+        Map<String, Object> out = new HashMap<>();
+        String code = "0000";
+        if (StringUtil.isEmpty(email)) {
+            code = "0001";
+        } else {
+            try {
+                if (userService.isRegEmail(email)) {
+                    code = "0101";
+                }
+            } catch (Exception e) {
+                logToMail.error(this.getClass().getName() + "类 isRegEmail(String email)," +
+                        "(" + email + ")", e);
+                code = "9999";
             }
         }
         out.put("code", code);
@@ -79,6 +107,8 @@ public class UserController {
                     code = "0002";
                 } else if (userService.isReg(userName)) {
                     code = "0100";
+                } else if (userService.isRegEmail(email)) {
+                    code = "0101";
                 } else if (validateService.validateCode(validCode, email, "0")) {
                     userService.regUser(userName, userPass, email);
                 } else {
@@ -87,7 +117,7 @@ public class UserController {
             } catch (Exception e) {
                 logToMail.error(this.getClass().getName() + "类 regist(String userName, String userPass, String email, String validCode)," +
                         "(" + userName + "," + userPass + "," + email + "," + validCode + ")", e);
-                code = "1001";
+                code = "9999";
             }
         }
         out.put("code", code);

@@ -3,7 +3,7 @@ package com.noadd.myapp.domain.entity.secret;
 public class PreSecrtUser {
     private String uuid;
     private String userId;
-    private String eamil;
+    private String email;
     private Long expiryTime;
     private String loginToken;
     private Long createTime;
@@ -45,12 +45,12 @@ public class PreSecrtUser {
         this.userId = userId;
     }
 
-    public String getEamil() {
-        return eamil;
+    public String getEmail() {
+        return email;
     }
 
-    public void setEamil(String eamil) {
-        this.eamil = eamil;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Long getExpiryTime() {

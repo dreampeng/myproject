@@ -18,11 +18,17 @@ public class MessageUtil {
             case "0100":
                 msg = "用户名已存在";
                 break;
+            case "0101":
+                msg = "邮箱已存在";
+                break;
             case "1001":
                 msg = "验证码获取失败";
                 break;
             case "1002":
-                msg = "请输入正确的最新的未使用的验证码";
+                msg = "请重新获取验证码";
+                break;
+            case "9999":
+                msg = "系统错误请联系管理员";
                 break;
             default:
                 msg = "发现未定义的错误:" + code;

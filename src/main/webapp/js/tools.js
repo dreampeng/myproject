@@ -90,7 +90,7 @@ const regularExpression = {
     //密码
     userPass: '^[a-zA-Z0-9_]{6,12}$',
     //邮箱
-    email: '^\w+([-+.]\w+)*@qq.com*$',
+    email: '^\\w+([-+.]\\w+)*@qq.com$',
     //验证码
     validCode: '^[a-zA-Z0-9]{6}$'
 };

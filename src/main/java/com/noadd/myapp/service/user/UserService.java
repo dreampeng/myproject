@@ -8,14 +8,21 @@ public interface UserService {
      * @param userName 用户名
      * @return
      */
-    public boolean isReg(String userName);
+    boolean isReg(String userName);
 
     /**
      * 添加用户
      * @param userName 用户名
      * @param userPass 密码
-     * @param eamil 邮箱
+     * @param email 邮箱
      * @return
      */
-    public PreUser regUser(String userName, String userPass, String eamil);
+    PreUser regUser(String userName, String userPass, String email);
+
+    /**
+     * 判断邮件是否已经注册
+     * @param email 邮件
+     * @return
+     */
+    boolean isRegEmail(String email);
 }

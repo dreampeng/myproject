@@ -9,6 +9,10 @@ public class PreUserDetail {
     private Long birthDay;
     private String qq;
     private String phone;
+    private Long createTime;
+    private String createBy;
+    private Long updateTime;
+    private String updateBy;
     private int isVoid;
 
     public String getUuid() {
@@ -73,6 +77,38 @@ public class PreUserDetail {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public Long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getCreateBy() {
+        return createBy;
+    }
+
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
+
+    public Long getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Long updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
     }
 
     public int getIsVoid() {
