@@ -3,13 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>Join us</title>
+    <title>Login in</title>
     <link rel="stylesheet" href="/layui/css/layui.css">
     <link rel="stylesheet" href="/css/layout/layout.css">
     <script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="/js/tools.js"></script>
     <script type="text/javascript" src="/layui/layui.js"></script>
-    <script type="text/javascript" src="/js/regist.js"></script>
+    <script type="text/javascript" src="/js/login.js"></script>
 </head>
 <body>
 <div class="top-nav layui-bg-black">
@@ -61,7 +61,7 @@
         <div class="layui-col-xs4">
             <span class="sec-nav-where layui-breadcrumb" lay-separator="/">
                 <a href="/">Chiose</a>
-                <a><cite>注册</cite></a>
+                <a><cite>登陆</cite></a>
             </span>
         </div>
         <div class="layui-col-xs4">
@@ -86,71 +86,51 @@
 <div class="main-content layui-main">
     <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
         <ul class="layui-tab-title">
-            <a href="/login.html">
-                <li>登录</li>
+
+            <li class="layui-this">登录</li>
+            <a href="/regist.html">
+                <li>注册</li>
             </a>
-            <li class="layui-this">注册</li>
         </ul>
         <div class="layui-tab-content" style="height: 100px;">
             <div class="layui-tab-item layui-show  layui-row">
                 <div class="layui-col-xs5">
-                    <form id="form_regist" class="layui-form layui-form-pane">
+                    <form id="form_login" class="layui-form layui-form-pane">
                         <div class="layui-form-item">
                             <label class="layui-form-label">用户名</label>
                             <div class="layui-input-inline">
-                                <input type="text" id="userName" lay-verify="required" placeholder="请输入用户名(字母开头)"
+                                <input type="text" id="userName" lay-verify="required" placeholder="呃...就是你的用户名"
                                        autocomplete="off" class="layui-input">
                             </div>
-                            <div class="layui-form-mid layui-word-aux">6-12位(字母/数字/_ )</div>
                         </div>
                         <div class="layui-form-item">
                             <label class="layui-form-label">密码</label>
                             <div class="layui-input-inline">
-                                <input type="password" id="userPass" lay-verify="required" placeholder="请输入密码"
+                                <input type="password" id="userPass" lay-verify="required" placeholder="呃...你自己的密码啊"
                                        autocomplete="off" class="layui-input">
                             </div>
-                            <div class="layui-form-mid layui-word-aux">6-12位(字母/数字/_ )</div>
-                        </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">确认密码</label>
-                            <div class="layui-input-inline">
-                                <input type="password" id="reUserPass" lay-verify="required" placeholder="请再次输入密码"
-                                       autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">e-mail</label>
-                            <div class="layui-input-inline">
-                                <input type="text" id="email" lay-verify="required" placeholder="请输入自己的QQ邮箱"
-                                       autocomplete="off" class="layui-input">
-                            </div>
-                            <a class="layui-icon layui-btn layui-btn-normal search_btn" id="getValidateCode"><i
-                                    class="layui-icon">&#xe6b2;</i> 获取</a>
                         </div>
                         <div class="layui-form-item">
                             <label class="layui-form-label">验证码</label>
                             <div class="layui-input-inline">
-                                <input type="text" id="validCode" lay-verify="required" placeholder="请输入收到的验证码"
+                                <input type="text" id="validCode" lay-verify="required" placeholder="哎...输入下面你看到的"
                                        autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-form-item">
                             <div class="layui-input-inline">
-                                <input type="checkbox" name="useTerms" lay-skin="primary"
-                                       title="" checked="">
-                                <a href="/instructions/terms.html" target="_blank"
-                                   style="position: relative; top: 4px; left: 5px; color: #999;">同意用户服务条款</a>
+                                <img src="/img/logo.png"/>
                             </div>
                         </div>
-
                         <div class="layui-form-item">
                             <div class="layui-input-inline">
                                 <a class="layui-icon layui-btn search_btn" id="submit"><i
-                                        class="layui-icon">&#xe618;</i> 加入</a>
+                                        class="layui-icon">&#xe618;</i> 登录</a>
                             </div>
                             <div class="layui-input-inline">
-                                <a class="layui-icon layui-btn layui-btn-warm search_btn" id="reset"><i
-                                        class="layui-icon">&#x1006;</i> 重置</a>
+                                <a href="/forgot.html" class="layui-icon layui-btn layui-btn-warm search_btn"
+                                   id="reset"><i
+                                        class="layui-icon">&#xe607;</i> 忘记了唉</a>
                             </div>
                         </div>
                     </form>
