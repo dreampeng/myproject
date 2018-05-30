@@ -21,6 +21,7 @@ public class MyWebFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         String url = httpRequest.getRequestURI().substring(httpRequest.getContextPath().length());
+
         filterChain.doFilter(servletRequest,servletResponse);
     }
 

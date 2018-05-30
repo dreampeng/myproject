@@ -125,4 +125,24 @@ public class UserController {
         return out;
     }
 
+    @PostMapping("/login")
+    public Map<String, Object> login(String userName, String userPass, String validCode) {
+        Map<String, Object> out = new HashMap<>();
+        String code = "0000";
+        if (StringUtil.isEmpty(userName, userPass, validCode)) {
+            code = "0001";
+        } else {
+            try {
+
+            } catch (Exception e) {
+                logToMail.error(this.getClass().getName() + "类 login(String userName, String userPass, String email, String validCode)," +
+                        "(" + userName + "," + userPass + "," + validCode + ")", e);
+                code = "9999";
+            }
+        }
+        out.put("code", code);
+        out.put("msg", MessageUtil.sysCodeMsg(code));
+        return out;
+    }
+
 }

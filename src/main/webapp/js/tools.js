@@ -16,6 +16,9 @@ function sendAjax(url, data, funsu, sync, mask) {
         url: url,
         dataType: 'json',
         data: data,
+        xhrFields: {
+            withCredentials: true
+        },
         beforeSend: function () {
             if (mask != false) {
                 shadow = layer.load(1, {shade: 0.6,}); //换了种风格
