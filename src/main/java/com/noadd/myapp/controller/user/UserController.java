@@ -1,6 +1,5 @@
 package com.noadd.myapp.controller.user;
 
-import com.noadd.myapp.mailservice.LogToMail;
 import com.noadd.myapp.service.user.UserService;
 import com.noadd.myapp.service.validate.ValidateService;
 import com.noadd.myapp.util.MessageUtil;
@@ -17,8 +16,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    @Autowired
-    private LogToMail logToMail;
     @Autowired
     private UserService userService;
     @Autowired
@@ -37,14 +34,8 @@ public class UserController {
         if (StringUtil.isEmpty(userName)) {
             code = "0001";
         } else {
-            try {
-                if (userService.isReg(userName)) {
-                    code = "0100";
-                }
-            } catch (Exception e) {
-                logToMail.error(this.getClass().getName() + "类 isReg(String userName)," +
-                        "(" + userName + ")", e);
-                code = "9999";
+            if (userService.isReg(userName)) {
+                code = "0100";
             }
         }
         out.put("code", code);
@@ -65,14 +56,8 @@ public class UserController {
         if (StringUtil.isEmpty(email)) {
             code = "0001";
         } else {
-            try {
-                if (userService.isRegEmail(email)) {
-                    code = "0101";
-                }
-            } catch (Exception e) {
-                logToMail.error(this.getClass().getName() + "类 isRegEmail(String email)," +
-                        "(" + email + ")", e);
-                code = "9999";
+            if (userService.isRegEmail(email)) {
+                code = "0101";
             }
         }
         out.put("code", code);
@@ -97,22 +82,16 @@ public class UserController {
         if (StringUtil.isEmpty(userName, userPass, email, validCode)) {
             code = "0001";
         } else {
-            try {
-                if (!ParamUtil.registvalidate(userName, userPass, email)) {
-                    code = "0002";
-                } else if (userService.isReg(userName)) {
-                    code = "0100";
-                } else if (userService.isRegEmail(email)) {
-                    code = "0101";
-                } else if (validateService.validateCode(validCode, email, "0")) {
-                    userService.regUser(userName, userPass, email);
-                } else {
-                    code = "1002";
-                }
-            } catch (Exception e) {
-                logToMail.error(this.getClass().getName() + "类 regist(String userName, String userPass, String email, String validCode)," +
-                        "(" + userName + "," + userPass + "," + email + "," + validCode + ")", e);
-                code = "9999";
+            if (!ParamUtil.registvalidate(userName, userPass, email)) {
+                code = "0002";
+            } else if (userService.isReg(userName)) {
+                code = "0100";
+            } else if (userService.isRegEmail(email)) {
+                code = "0101";
+            } else if (validateService.validateCode(validCode, email, "0")) {
+                userService.regUser(userName, userPass, email);
+            } else {
+                code = "1002";
             }
         }
         out.put("code", code);
@@ -127,13 +106,7 @@ public class UserController {
         if (StringUtil.isEmpty(userName, userPass, validCode)) {
             code = "0001";
         } else {
-            try {
 
-            } catch (Exception e) {
-                logToMail.error(this.getClass().getName() + "类 login(String userName, String userPass, String email, String validCode)," +
-                        "(" + userName + "," + userPass + "," + validCode + ")", e);
-                code = "9999";
-            }
         }
         out.put("code", code);
         out.put("msg", MessageUtil.sysCodeMsg(code));

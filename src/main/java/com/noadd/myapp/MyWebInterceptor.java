@@ -1,8 +1,6 @@
 package com.noadd.myapp;
 
 import com.noadd.myapp.mailservice.LogToMail;
-import com.noadd.myapp.util.securityUtil.SecurityUtil;
-import org.apache.catalina.util.ParameterMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -11,9 +9,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Iterator;
+import java.io.PrintWriter;
 import java.util.Map;
-import java.util.Set;
 
 @Component
 public class MyWebInterceptor implements HandlerInterceptor {
@@ -22,36 +19,40 @@ public class MyWebInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        try {
-            Map<String, String[]> parameterMap = request.getParameterMap();
-            for (Map.Entry<String, String[]> temp : parameterMap.entrySet()) {
-                for (int x = 0; x < temp.getValue().length; x++) {
-                    request.setAttribute(temp.getKey(), SecurityUtil.decrypt(temp.getValue()[x]));
-                }
-            }
-        } catch (Exception e) {
-            return false;
-        }
+
         return true;
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        String methodName = handlerMethod.getMethod().getName();
-        MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
-        String methParam = "";
-        for (MethodParameter temp : methodParameters) {
-            methParam += ", " + temp.getParameterType().getSimpleName() + " " + temp.getParameterName();
-        }
-        Map<String, String[]> parameterMap = request.getParameterMap();
         if (ex != null) {
+            HandlerMethod handlerMethod = (HandlerMethod) handler;
+            String methodName = handlerMethod.getMethod().getName();
+            MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
+            String methParam = "";
+            Map<String, String[]> parameterMap = request.getParameterMap();
+            String paramValue = "";
+            for (MethodParameter temp : methodParameters) {
+                methParam += ", " + temp.getParameterType().getSimpleName() + " " + temp.getParameterName();
+                for (Map.Entry<String, String[]> tempParameter : parameterMap.entrySet()) {
+                    if (temp.getParameterName().equals(tempParameter.getKey())) {
+                        String tempStr = "";
+                        for (String str : tempParameter.getValue()) {
+                            tempStr += "," + str;
+                        }
+                        if (tempParameter.getValue().length != 1) {
+                            tempStr = "[" + tempStr.substring(1) + "]";
+                        } else {
+                            tempStr = tempStr.substring(1);
+                        }
+                        paramValue += "," + tempStr;
+                    }
+                }
+            }
             logToMail.error("方法名:" + methodName +
-                    "\n参数(" + methParam.substring(2) + "),", ex);
-//                    +
-//                    "\n(" + sendType + "," + sendTo + "," + codeType + ")", ex);
+                    "\n方法参数(" + methParam.substring(2) + ")," +
+                    "\n传入参数(" + paramValue.substring(1) + ")", ex);
 
         }
-        System.out.println();
     }
 }
