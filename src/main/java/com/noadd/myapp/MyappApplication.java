@@ -19,14 +19,14 @@ public class MyappApplication {
 
 
 
-    @Bean
-    public FilterRegistrationBean filterRegistrationBean() {
-        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
-        List<String> urlPatterns = new ArrayList<>();
-        MyWebFilter myWebFilter = new MyWebFilter();
-        urlPatterns.add("/*");
-        filterRegistrationBean.setFilter(myWebFilter);
-        filterRegistrationBean.setUrlPatterns(urlPatterns);
-        return filterRegistrationBean;
-    }
+//    @Bean
+//    public FilterRegistrationBean filterRegistrationBean() {
+//        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+//        List<String> urlPatterns = new ArrayList<>();
+//        MyWebFilter myWebFilter = new MyWebFilter();
+//        urlPatterns.add("/*");
+//        filterRegistrationBean.setFilter(myWebFilter);
+//        filterRegistrationBean.setUrlPatterns(urlPatterns);
+//        return filterRegistrationBean;
+//    }
 }

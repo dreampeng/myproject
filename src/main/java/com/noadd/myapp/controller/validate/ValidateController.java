@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,11 +24,11 @@ import java.util.Map;
 @Transactional
 public class ValidateController {
     @Autowired
-    private LogToMail logToMail;
-    @Autowired
     private ValidateService validateService;
     @Autowired
     private UserService userService;
+    @Autowired
+    HttpServletRequest request;
 
     /**
      * 获取验证码
@@ -40,6 +41,9 @@ public class ValidateController {
      */
     @PostMapping("/getcode")
     public Map<String, Object> login(String sendType, String sendTo, String codeType) throws InterruptedException {
+        sendType = (String) request.getAttribute("sendType");
+        sendTo = (String) request.getAttribute("sendTo");
+        codeType = (String) request.getAttribute("codeType");
         Map<String, Object> out = new HashMap<>();
         String code = "0000";
         if (StringUtil.isEmpty(sendType, sendTo, codeType)) {
@@ -47,17 +51,10 @@ public class ValidateController {
         } else if (RegularUtil.regularMatch(sendTo, RegularUtil.email)) {
             code = "0002";
         } else {
-            try {
-                if ("0".equals(codeType) && userService.isRegEmail(sendTo)) {
-                    code = "0101";
-                } else {
-                    validateService.createValidateCode(sendType, sendTo, codeType);
-                }
-            } catch (Exception e) {
-                logToMail.error("验证码获取失败," +
-                        "\n参数(String sendType, String sendTo, String codeType)," +
-                        "\n(" + sendType + "," + sendTo + "," + codeType + ")", e);
-                code = "9999";
+            if ("0".equals(codeType) && userService.isRegEmail(sendTo)) {
+                code = "0101";
+            } else {
+                validateService.createValidateCode(sendType, sendTo, codeType);
             }
         }
         out.put("code", code);
