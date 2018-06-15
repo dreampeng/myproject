@@ -4,15 +4,11 @@ import com.noadd.myapp.domain.entity.PreValidateCode;
 import com.noadd.myapp.domain.mapper.PreValidateCodeMap;
 import com.noadd.myapp.mailservice.MyMailService;
 import com.noadd.myapp.service.validate.ValidateService;
+import com.noadd.myapp.util.baseUtil.GUIDUtil;
 import com.noadd.myapp.util.baseUtil.StringUtil;
 import com.noadd.myapp.util.baseUtil.TimeUtil;
-import com.noadd.myapp.util.baseUtil.GUIDUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.mail.MessagingException;
 
 @Service
 public class ValidateServiceImpl implements ValidateService {

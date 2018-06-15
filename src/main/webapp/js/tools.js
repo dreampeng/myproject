@@ -10,11 +10,11 @@
 function sendAjax(url, data, funsu, sync, mask) {
     var encrypt = new JSEncrypt();
     encrypt.setPublicKey(k);
-    encrypt.setPrivateKey(k);
     var sendData = new Object();
     for (var key in data) {
         sendData[key] = encrypt.encrypt(data[key]);
     }
+    sendData.isFromWeb = 1;
     var shadow;
     $.ajax({
         sync: sync,
@@ -37,8 +37,8 @@ function sendAjax(url, data, funsu, sync, mask) {
         error: function () {
             msgError("系统错误,请联系管理员");
         },
-        success: function (data) {
-            funsu(data);
+        success: function (retData) {
+            funsu(retData);
         }
     });
 }
@@ -104,48 +104,6 @@ const regularExpression = {
     //验证码
     validCode: '^[a-zA-Z0-9]{6}$'
 };
-
-
-// 使用jsencrypt类库加密js方法，
-function encryptRequest(reqUrl, data, publicKey) {
-    var encrypt = new JSEncrypt();
-    encrypt.setPublicKey(publicKey);
-    // ajax请求发送的数据对象
-    var sendData = new Object();
-    // 将data数组赋给ajax对象
-    for (var key in data) {
-        sendData[key] = encrypt.encrypt(data[key]);
-    }
-
-    $.ajax({
-        url: reqUrl,
-        type: 'post',
-        data: sendData,
-        dataType: 'json',
-        //contentType: 'application/json; charset=utf-8',
-        success: function (data) {
-            console.info(data);
-        },
-        error: function (xhr) {
-            //console.error('出错了');
-        }
-    });
-
-}
-
-// Call this code when the page is done loading.
-$(function () {
-
-    $('#testme').click(function () {
-
-        var data = [];
-        data['username'] = $('#username').val();
-        data['passwd'] = $('#passwd').val();
-
-        var pkey = $('#pubkey').val();
-        encryptRequest('/WebForm2.aspx', data, pkey);
-    });
-});
 
 var k = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCwprhEw68HqvdoaFFmj7WFFdsC\n' +
     'VDxRbZHozmpGC6v38h8YibA8RYM4Xy9nfF5ZBaNEp46Fh2PKC9Dmvsg0HP6zMiry\n' +

@@ -28,8 +28,8 @@ public class UserController {
      * @return
      */
     @PostMapping("/isreg")
-    public Map<String, Object> isReg(String userName) {
-        Map<String, Object> out = new HashMap<>();
+    public Map<String, String> isReg(String userName) {
+        Map<String, String> out = new HashMap<>();
         String code = "0000";
         if (StringUtil.isEmpty(userName)) {
             code = "0001";
@@ -39,7 +39,6 @@ public class UserController {
             }
         }
         out.put("code", code);
-        out.put("msg", MessageUtil.sysCodeMsg(code));
         return out;
     }
 
@@ -50,8 +49,8 @@ public class UserController {
      * @return
      */
     @PostMapping("/isregemail")
-    public Map<String, Object> isRegEmail(String email) {
-        Map<String, Object> out = new HashMap<>();
+    public Map<String, String> isRegEmail(String email) {
+        Map<String, String> out = new HashMap<>();
         String code = "0000";
         if (StringUtil.isEmpty(email)) {
             code = "0001";
@@ -61,7 +60,6 @@ public class UserController {
             }
         }
         out.put("code", code);
-        out.put("msg", MessageUtil.sysCodeMsg(code));
         return out;
     }
 
@@ -76,8 +74,8 @@ public class UserController {
      * @return
      */
     @PostMapping("/regist")
-    public Map<String, Object> regist(String userName, String userPass, String email, String validCode) {
-        Map<String, Object> out = new HashMap<>();
+    public Map<String, String> regist(String userName, String userPass, String email, String validCode) {
+        Map<String, String> out = new HashMap<>();
         String code = "0000";
         if (StringUtil.isEmpty(userName, userPass, email, validCode)) {
             code = "0001";
@@ -95,13 +93,12 @@ public class UserController {
             }
         }
         out.put("code", code);
-        out.put("msg", MessageUtil.sysCodeMsg(code));
         return out;
     }
 
     @PostMapping("/login")
-    public Map<String, Object> login(String userName, String userPass, String validCode) {
-        Map<String, Object> out = new HashMap<>();
+    public Map<String, String> login(String userName, String userPass, String validCode) {
+        Map<String, String> out = new HashMap<>();
         String code = "0000";
         if (StringUtil.isEmpty(userName, userPass, validCode)) {
             code = "0001";
@@ -109,7 +106,6 @@ public class UserController {
 
         }
         out.put("code", code);
-        out.put("msg", MessageUtil.sysCodeMsg(code));
         return out;
     }
 

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,15 +31,15 @@ public class ValidateController {
     /**
      * 获取验证码
      *
-     * @param sendType
      * @param sendTo
+     * @param sendType
      * @param codeType
      * @return
      * @throws InterruptedException
      */
     @PostMapping("/getcode")
-    public Map<String, Object> login(String sendType, String sendTo, String codeType) throws InterruptedException {
-        Map<String, Object> out = new HashMap<>();
+    public Map<String, String> getCode(String sendTo, String sendType, String codeType) throws InterruptedException {
+        Map<String, String> out = new HashMap<>();
         String code = "0000";
         if (StringUtil.isEmpty(sendType, sendTo, codeType)) {
             code = "0001";
@@ -51,7 +53,6 @@ public class ValidateController {
             }
         }
         out.put("code", code);
-        out.put("msg", MessageUtil.sysCodeMsg(code));
         return out;
     }
 }
