@@ -42,7 +42,7 @@ public class MyAspect {
                 try {
                     objects[x] = SecurityUtil.decrypt((String) objects[x]);
                 } catch (Exception e) {
-
+                    return null;
                 }
             }
         }
