@@ -2,7 +2,6 @@ package com.noadd.myapp.controller.user;
 
 import com.noadd.myapp.service.user.UserService;
 import com.noadd.myapp.service.validate.ValidateService;
-import com.noadd.myapp.util.MessageUtil;
 import com.noadd.myapp.util.ParamUtil;
 import com.noadd.myapp.util.baseUtil.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
