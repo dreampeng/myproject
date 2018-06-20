@@ -56,7 +56,7 @@ function validForm(data) {
         return false;
     }
     if (regular(data.userPass, regularExpression.userPass)) {
-        msgTips("密码格式不正确", 'userName');
+        msgTips("密码格式不正确", 'userPass');
         return false;
     }
     if (data.validCode == "" || !data.validCode) {

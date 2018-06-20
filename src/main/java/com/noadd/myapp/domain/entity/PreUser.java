@@ -7,6 +7,7 @@ public class PreUser {
     private String uuid;
     private String userName;
     private String userPass;
+    private String loginToken;
     private Long createTime;
     private String createBy;
     private Long updateTime;
@@ -43,6 +44,14 @@ public class PreUser {
 
     public void setUserPass(String userPass) {
         this.userPass = userPass;
+    }
+
+    public String getLoginToken() {
+        return loginToken;
+    }
+
+    public void setLoginToken(String loginToken) {
+        this.loginToken = loginToken;
     }
 
     public Long getCreateTime() {

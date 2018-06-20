@@ -29,4 +29,9 @@ public interface PreUserDetailMap {
             "(#{uuid},#{userId},#{nickName},#{headImg},#{email},#{birthDay},#{qq},#{phone},#{createBy},#{createTime}" +
             ",#{updateBy},#{updateTime},#{isVoid})")
     int insertUserDetail(PreUserDetail userDetail);
+
+    @Select("select uuid,user_id userId,nick_name nickName,head_img headImg,email,birth_day birthDay,qq,phone," +
+            "create_by createBy,create_time createTime,update_by updateBy,update_time updateTime,is_void isVoid " +
+            "from pre_user_detail where user_id = #{userId}")
+    PreUserDetail selectUserDetail(@Param("userId") String userId);
 }

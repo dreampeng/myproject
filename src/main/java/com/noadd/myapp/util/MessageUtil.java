@@ -27,6 +27,15 @@ public class MessageUtil {
             case "1002":
                 msg = "请重新获取验证码";
                 break;
+            case "9001":
+                msg = "用户名或密码错误";
+                break;
+            case "9997":
+                msg = "已经在其它地方登陆";
+                break;
+            case "9998":
+                msg = "登陆失效，请重新登陆";
+                break;
             case "9999":
                 msg = "系统错误请联系管理员";
                 break;

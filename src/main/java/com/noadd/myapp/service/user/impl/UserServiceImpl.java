@@ -1,5 +1,6 @@
 package com.noadd.myapp.service.user.impl;
 
+import com.noadd.myapp.SessionContext;
 import com.noadd.myapp.domain.entity.PreUser;
 import com.noadd.myapp.domain.entity.PreUserDetail;
 import com.noadd.myapp.domain.mapper.PreUserDetailMap;
@@ -11,13 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
     @Autowired
-    private PreUserMap userMap;
+    PreUserMap userMap;
     @Autowired
-    private PreUserDetailMap userDetailMap;
+    PreUserDetailMap userDetailMap;
+    @Autowired
+    HttpSession session;
 
     @Override
     public boolean isReg(String userName) {
@@ -43,6 +49,7 @@ public class UserServiceImpl implements UserService {
         preUserDetail.setEmail(email);
         preUserDetail.setHeadImg("/img/userhead/default.png");
         preUserDetail.setUserId(preUser.getUuid());
+        preUserDetail.setNickName(userName);
         preUserDetail.setCreateBy(preUser.getUuid());
         preUserDetail.setCreateTime(preUser.getCreateTime());
         preUserDetail.setIsVoid(0);
@@ -57,5 +64,24 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String userLogin(String userName, String userPass, String validCode) {
+        PreUser loginUser = userMap.userLogin(userName, userPass);
+        //用户名密码错误
+        if (loginUser == null) {
+            return "9001";
+        }
+        //登录token处理
+        String loginToken = loginUser.getLoginToken();
+        if (loginToken != null && !"".equals(loginToken)) {
+            SessionContext.delSession(loginToken);
+        }
+        loginUser.setLoginToken(session.getId());
+        userMap.userUpadte(loginUser);
+        PreUserDetail userDetail = userDetailMap.selectUserDetail(loginUser.getUuid());
+        session.setAttribute("loginUser", userDetail);
+        return "0000";
     }
 }

@@ -14,7 +14,6 @@ function sendAjax(url, data, funsu, sync, mask) {
     for (var key in data) {
         sendData[key] = encrypt.encrypt(data[key]);
     }
-    sendData.isFromWeb = 1;
     var shadow;
     $.ajax({
         sync: sync,
@@ -38,6 +37,15 @@ function sendAjax(url, data, funsu, sync, mask) {
             msgError("系统错误,请联系管理员");
         },
         success: function (retData) {
+            if (retData.code == "9998") {
+                msgError(retData.msg);
+                setTimeout('window.location.href = "/login.html";', 2000);
+
+                return false;
+            }
+            if (retData.data != undefined && retData.data != "{}" && retData.data != "") {
+                retData.data = JSON.parse(retData.data);
+            }
             funsu(retData);
         }
     });

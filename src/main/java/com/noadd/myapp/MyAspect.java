@@ -65,23 +65,22 @@ public class MyAspect {
                 paramValue += ", " + str;
             }
             logToMail.error("方法名:" + m.getName() +
-                    "\n方法参数(" + methodParam.substring(2) + ")," +
-                    "\n传入参数(" + paramValue.substring(2) + ")", throwable);
+                    "\n方法参数(" + ("".equals(methodParam) ? "" : methodParam.substring(2)) + ")," +
+                    "\n传入参数(" + ("".equals(paramValue) ? "" : paramValue.substring(2)) + ")", throwable);
         }
         if (retMap == null) {
             retMap = new HashMap<>();
             retMap.put("code", "9999");
         }
         retMap.put("msg", MessageUtil.sysCodeMsg(retMap.get("code")));
-        String[] isFromWeb = request.getParameterMap().get("isFromWeb");
-        if (isFromWeb != null && "1".equals(isFromWeb[0])) {
-            return retMap;
-        }
-        for (Map.Entry<String, String> temp : retMap.entrySet()) {
-            try {
-                retMap.put(temp.getKey(), SecurityUtil.signature(temp.getValue()));
-            } catch (Exception e) {
-                e.printStackTrace();
+        String[] isFromApp = request.getParameterMap().get("isFromWeb");
+        if (isFromApp != null && "1".equals(isFromApp[0])) {
+            for (Map.Entry<String, String> temp : retMap.entrySet()) {
+                try {
+                    retMap.put(temp.getKey(), SecurityUtil.signature(temp.getValue()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
         return retMap;

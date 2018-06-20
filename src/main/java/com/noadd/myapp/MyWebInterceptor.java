@@ -1,22 +1,34 @@
 package com.noadd.myapp;
 
-import com.noadd.myapp.mailservice.LogToMail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @Component
 public class MyWebInterceptor implements HandlerInterceptor {
+
     @Autowired
-    private LogToMail logToMail;
+    HttpSession session;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
-        return true;
+        try {
+            if (session.getAttribute("loginUser") == null) {
+                request.setAttribute("code", "9998");
+                request.getRequestDispatcher("/login").forward(request, response);
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            session = request.getSession(true);
+            request.setAttribute("code", "9998");
+            request.getRequestDispatcher("/login").forward(request, response);
+            return false;
+        }
     }
 
     @Override

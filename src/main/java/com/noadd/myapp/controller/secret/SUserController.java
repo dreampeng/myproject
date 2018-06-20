@@ -1,20 +1,20 @@
 package com.noadd.myapp.controller.secret;
 
-import com.noadd.myapp.service.secret.SUerService;
 import com.noadd.myapp.util.baseUtil.StringUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@RestController
 @RequestMapping("secret")
-public class UserController {
-    @Autowired
-    private SUerService sUerService;
+public class SUserController {
+//    @Autowired
+//    private SUerService sUerService;
 
-    @PostMapping("/login")
+    @GetMapping("/login")
     public Map<String, String> login(String userName, String userPass) {
         Map<String, String> out = new HashMap<>();
         String code = "0000";

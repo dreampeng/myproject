@@ -1,5 +1,7 @@
 package com.noadd.myapp.controller.user;
 
+import com.alibaba.fastjson.JSONObject;
+import com.noadd.myapp.domain.entity.PreUserDetail;
 import com.noadd.myapp.service.user.UserService;
 import com.noadd.myapp.service.validate.ValidateService;
 import com.noadd.myapp.util.ParamUtil;
@@ -9,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,9 +20,11 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
     @Autowired
-    private UserService userService;
+    UserService userService;
     @Autowired
-    private ValidateService validateService;
+    ValidateService validateService;
+    @Autowired
+    HttpSession session;
 
     /**
      * 判断用户名是否已注册
@@ -98,13 +104,28 @@ public class UserController {
     @PostMapping("/login")
     public Map<String, String> login(String userName, String userPass, String validCode) {
         Map<String, String> out = new HashMap<>();
-        String code = "0000";
-        if (StringUtil.isEmpty(userName, userPass, validCode)) {
+        String code;
+        if (StringUtil.isEmpty(userName, userPass)) {
             code = "0001";
         } else {
-
+            code = userService.userLogin(userName, userPass, validCode);
         }
         out.put("code", code);
+        return out;
+    }
+
+    @PostMapping("/logindetail")
+    public Map<String, Object> getLoginDetail() {
+        Map<String, Object> out = new HashMap<>();
+        String code = "0000";
+        PreUserDetail userDetail = (PreUserDetail) session.getAttribute("loginUser");
+        JSONObject jsonObject = new JSONObject();
+        if (userDetail != null) {
+            jsonObject.put("nickName", userDetail.getNickName());
+            jsonObject.put("headImg", userDetail.getHeadImg());
+        }
+        out.put("code", code);
+        out.put("data", jsonObject.toJSONString());
         return out;
     }
 
