@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
@@ -101,6 +100,13 @@ public class UserController {
         return out;
     }
 
+    /**
+     * 用户登录
+     * @param userName
+     * @param userPass
+     * @param validCode
+     * @return
+     */
     @PostMapping("/login")
     public Map<String, String> login(String userName, String userPass, String validCode) {
         Map<String, String> out = new HashMap<>();
@@ -114,6 +120,10 @@ public class UserController {
         return out;
     }
 
+    /**
+     * 获取用户登录详情
+     * @return
+     */
     @PostMapping("/logindetail")
     public Map<String, Object> getLoginDetail() {
         Map<String, Object> out = new HashMap<>();
