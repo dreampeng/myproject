@@ -117,3 +117,10 @@ var k = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCwprhEw68HqvdoaFFmj7WFFdsC\n' +
     'VDxRbZHozmpGC6v38h8YibA8RYM4Xy9nfF5ZBaNEp46Fh2PKC9Dmvsg0HP6zMiry\n' +
     'rzhCKUU2g/P1VL9JpwC63OixfLq2Iddo3qs1jjMqx6JKNYR4EGgM0Ti8ZyJX7EeK\n' +
     'ZKTmg5MgQ3xwjSZy8QIDAQAB';
+
+//注意：导航 依赖 element 模块，否则无法进行功能性操作
+layui.use('element', function () {
+    var element = layui.element;
+});
+
+
