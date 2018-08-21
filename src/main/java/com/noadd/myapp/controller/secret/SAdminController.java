@@ -15,7 +15,7 @@ public class SAdminController {
     HttpSession session;
 
     @RequestMapping("/login")
-    public Map<String, Object> adminLogin(String adminName, String adminPass) {
+    public Map<String, Object> adminLogin(String userId) {
         session.setAttribute("key",null);
         return null;
     }

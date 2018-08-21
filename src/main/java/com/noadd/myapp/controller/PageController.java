@@ -20,4 +20,12 @@ public class PageController {
         out.put("code", code);
         return out;
     }
+
+    @RequestMapping("/secret/login")
+    public Map<String, String> toSecretLogin() {
+        Map<String, String> out = new HashMap<>();
+        String code = (String) request.getAttribute("code");
+        out.put("code", code);
+        return out;
+    }
 }

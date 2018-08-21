@@ -40,7 +40,6 @@ function sendAjax(url, data, funsu, sync, mask) {
             if (retData.code == "9998") {
                 msgError(retData.msg);
                 setTimeout('window.location.href = "/login.html";', 2000);
-
                 return false;
             }
             if (retData.data != undefined && retData.data != "{}" && retData.data != "") {
