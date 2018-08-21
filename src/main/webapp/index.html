@@ -1,25 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>The Choice of yours</title>
-    <link href="/css/choice.css" type="text/css" rel="stylesheet"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title></title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/layout/layout.css">
+    <script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/layui/layui.js"></script>
+    <script type="text/javascript" src="/js/web/login.js"></script>
 </head>
 <body>
-<ul class="list" style="margin-top: 7%">
-    <li>
-        <a href="/regist.html" title="Join Us">
-            <div class="border"></div>
-            <span class="icon">J</span>
-            <div class="text">
-                <h2>加入我们</h2>
-                <h3>Join</h3>
+<div class="top-nav layui-bg-black">
+    <div class="layui-main layui-row">
+        <div class="layui-col-xs1">
+            <a href="/"><img class="top-nav-logo" src="/img/logo.png"></a>
+        </div>
+        <div class="layui-col-xs8">
+            <ul class="top-nav-menu layui-nav">
+                <li class="layui-nav-item"><a href="/">Choice</a></li>
+                <li class="layui-nav-item layui-this">
+                    <a href="javascript:;">首页</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="">选项1</a></dd>
+                        <dd><a href="">选项2</a></dd>
+                        <dd><a href="">选项3</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">解决方案</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="">移动模块</a></dd>
+                        <dd><a href="">后台模版</a></dd>
+                        <dd class="layui-this"><a href="">选中项</a></dd>
+                        <dd><a href="">电商平台</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+        <div class="layui-col-xs3">
+            <ul class="top-nav-user layui-nav">
+                <li class="layui-nav-item">
+                    <a href="">个人中心<span class="layui-badge">9</span></a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href=""><img src="http://t.cn/RCzsdCq" class="layui-nav-img">我</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;">修改信息</a></dd>
+                        <dd><a href="javascript:;">安全管理<span class="layui-badge-dot"></span></a></dd>
+                        <dd><a href="javascript:;">退出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="sec-nav">
+    <div class="layui-main layui-row">
+        <div class="layui-col-xs4">
+            <span class="sec-nav-where layui-breadcrumb" lay-separator="/">
+                <a href="/">Chiose</a>
+                <a><cite>登陆</cite></a>
+            </span>
+        </div>
+        <div class="layui-col-xs4">
+            <span class="sec-nav-list layui-breadcrumb" lay-separator="|">
+              <a href="/chat">交流</a>
+              <a href="/skill">技艺</a>
+              <a href="/game">游戏</a>
+              <a href="/resource">共享</a>
+              <a href="/blog">博客</a>
+              <a href="secret">秘密</a>
+            </span>
+        </div>
+        <div class="layui-col-xs3">
+            <input type="text" class="layui-input search_input" lay-verify="title" autocomplete="off"
+                   placeholder="请输入...">
+        </div>
+        <div class="layui-col-xs1">
+            <a class="layui-icon layui-btn search_btn">&#xe615;</a>
+        </div>
+    </div>
+</div>
+<div class="main-content layui-main">
+    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+        <ul class="layui-tab-title">
+
+            <li class="layui-this">登录</li>
+            <a href="/regist.html">
+                <li>注册</li>
+            </a>
+        </ul>
+        <div class="layui-tab-content" style="height: 100px;">
+            <div class="layui-tab-item layui-show  layui-row">
+                <div class="layui-col-xs5">
+                    <form id="form_login" class="layui-form layui-form-pane">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="userName" lay-verify="required" placeholder="呃...就是你的用户名"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">密码</label>
+                            <div class="layui-input-inline">
+                                <input type="password" id="userPass" lay-verify="required" placeholder="呃...你自己的密码啊"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">验证码</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="validCode" lay-verify="required" placeholder="哎...输入下面你看到的"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-inline">
+                                <img src="/img/logo.png"/>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-inline">
+                                <a class="layui-icon layui-btn search_btn" id="submit"><i
+                                        class="layui-icon">&#xe618;</i> 登录</a>
+                            </div>
+                            <div class="layui-input-inline">
+                                <a href="/forgot.html" class="layui-icon layui-btn layui-btn-warm search_btn"
+                                   id="reset"><i
+                                        class="layui-icon">&#xe607;</i> 忘记了唉</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="layui-col-xs6">
+                    <img src="">
+                </div>
             </div>
-            <div class="img">
-                <img src="/img/default.png"/>
-            </div>
-        </a>
-    </li>
-</ul>
+        </div>
+    </div>
+</div>
+<div class="layui-footer"></div>
 </body>
 </html>
