@@ -20,12 +20,12 @@ public class SecretInterceptor implements HandlerInterceptor {
         try {
             if (session.getAttribute("loginUser") == null) {
                 request.setAttribute("code", "9998");
-                request.getRequestDispatcher("/login").forward(request, response);
+                request.getRequestDispatcher("/japi/login").forward(request, response);
                 return false;
             } else {
                 PreUser loginUser = (PreUser) session.getAttribute("loginUser");
                 request.setAttribute("userId", loginUser.getUuid());
-                request.getRequestDispatcher("/secret/admin/login").forward(request, response);
+                request.getRequestDispatcher("/japi/secret/admin/login").forward(request, response);
                 return true;
             }
         } catch (Exception e) {
