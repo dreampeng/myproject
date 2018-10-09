@@ -7,6 +7,7 @@ import com.noadd.myapp.util.RegularUtil;
 import com.noadd.myapp.util.baseUtil.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +21,7 @@ import java.util.Map;
  * 验证码相关接口
  */
 @RestController
-@RequestMapping("/japi/validate")
+@RequestMapping("/validate")
 @Transactional
 public class ValidateController {
     @Autowired
@@ -52,6 +53,24 @@ public class ValidateController {
                 validateService.createValidateCode(sendType, sendTo, codeType);
             }
         }
+        out.put("code", code);
+        return out;
+    }
+
+
+    /**
+     * 获取验证码
+     *
+     * @param sendTo
+     * @param sendType
+     * @param codeType
+     * @return
+     * @throws InterruptedException
+     */
+    @GetMapping("/getcode")
+    public Map<String, String> getCodeGet(String sendTo, String sendType, String codeType) throws InterruptedException {
+        Map<String, String> out = new HashMap<>();
+        String code = "0000";
         out.put("code", code);
         return out;
     }

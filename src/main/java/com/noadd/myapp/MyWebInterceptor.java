@@ -19,14 +19,14 @@ public class MyWebInterceptor implements HandlerInterceptor {
         try {
             if (session.getAttribute("loginUser") == null) {
                 request.setAttribute("code", "9998");
-                request.getRequestDispatcher("/japi/login").forward(request, response);
+                request.getRequestDispatcher("/login").forward(request, response);
                 return false;
             }
             return true;
         } catch (Exception e) {
             session = request.getSession(true);
             request.setAttribute("code", "9998");
-            request.getRequestDispatcher("/japi/login").forward(request, response);
+            request.getRequestDispatcher("/login").forward(request, response);
             return false;
         }
     }

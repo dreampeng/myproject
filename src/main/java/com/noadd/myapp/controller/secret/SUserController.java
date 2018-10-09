@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/japi/secret")
+@RequestMapping("/secret")
 public class SUserController {
 //    @Autowired
 //    private SUerService sUerService;

@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/japi/user")
+@RequestMapping("/user")
 public class UserController {
     @Autowired
     UserService userService;
