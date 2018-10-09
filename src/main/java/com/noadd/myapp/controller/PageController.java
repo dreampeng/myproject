@@ -19,6 +19,8 @@ public class PageController {
         Map<String, String> out = new HashMap<>();
         String code = (String) request.getAttribute("code");
         out.put("code", code);
+//        String strBackUrl = (String) request.getAttribute("strBackUrl");
+//        out.put("strBackUrl", strBackUrl);
         return out;
     }
 

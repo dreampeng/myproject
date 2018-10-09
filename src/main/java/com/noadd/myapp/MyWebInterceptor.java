@@ -17,6 +17,13 @@ public class MyWebInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         try {
+//            String strBackUrl = "http://" + request.getServerName() //服务器地址
+//                    + ":"
+//                    + request.getServerPort()           //端口号
+//                    + request.getContextPath()      //项目名称
+//                    + request.getServletPath()      //请求页面或其他地址
+//                    + "?" + (request.getQueryString()); //参数
+//            request.setAttribute("strBackUrl", strBackUrl);
             if (session.getAttribute("loginUser") == null) {
                 request.setAttribute("code", "9998");
                 request.getRequestDispatcher("/japi/login").forward(request, response);
