@@ -32,7 +32,7 @@ function isReg() {
         msgTips("用户名格式不正确", 'userName');
         return false;
     }
-    sendAjax("/user/isreg", {"userName": userName}, function (retData) {
+    sendAjax("/japi/user/isreg", {"userName": userName}, function (retData) {
         var retCode = retData.code;
         if (retCode == "0100") {
             msgTips("用户名已存在!", 'userName');
@@ -55,7 +55,7 @@ function sendValidateCode() {
         msgTips("邮箱格式不正确", 'email');
         return false;
     }
-    sendAjax("/validate/getcode", data, function (retData) {
+    sendAjax("/japi/validate/getcode", data, function (retData) {
         var retCode = retData.code;
         if (retCode == "0000") {
             msgInfo("验证码已发送,请注意查收");
@@ -80,7 +80,7 @@ function submit() {
     if (!validForm(data)) {
         return false;
     }
-    sendAjax("/user/regist", data, function (retData) {
+    sendAjax("/japi/user/regist", data, function (retData) {
         var retCode = retData.code;
         if (retCode == "0000") {
             msgInfo("欢迎加入！");

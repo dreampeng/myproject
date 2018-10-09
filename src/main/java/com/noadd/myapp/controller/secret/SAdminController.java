@@ -9,7 +9,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 @RestController
-@RequestMapping("secret/admin")
+@RequestMapping("/japi/secret/admin")
 public class SAdminController {
     @Autowired
     HttpSession session;

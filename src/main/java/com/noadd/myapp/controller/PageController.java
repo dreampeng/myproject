@@ -9,11 +9,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/japi/")
 public class PageController {
     @Autowired
     HttpServletRequest request;
 
-    @RequestMapping("login")
+    @RequestMapping("/login")
     public Map<String, String> toLogin() {
         Map<String, String> out = new HashMap<>();
         String code = (String) request.getAttribute("code");

@@ -19,7 +19,7 @@ layui.use('form', function () {
         if (!validForm(data)) {
             return false;
         }
-        sendAjax("/user/login", data, function (retData) {
+        sendAjax("/japi/user/login", data, function (retData) {
             var retCode = retData.code;
             if (retCode == "0000") {
                 msgInfo("欢迎回家！");
