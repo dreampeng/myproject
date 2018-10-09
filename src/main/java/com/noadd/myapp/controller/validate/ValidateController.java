@@ -21,7 +21,7 @@ import java.util.Map;
  * 验证码相关接口
  */
 @RestController
-@RequestMapping("/validate")
+@RequestMapping("/japi/validate")
 @Transactional
 public class ValidateController {
     @Autowired

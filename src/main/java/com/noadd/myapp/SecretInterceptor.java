@@ -31,7 +31,7 @@ public class SecretInterceptor implements HandlerInterceptor {
         } catch (Exception e) {
             session = request.getSession(true);
             request.setAttribute("code", "9998");
-            request.getRequestDispatcher("/secret/login").forward(request, response);
+            request.getRequestDispatcher("/japi/secret/login").forward(request, response);
             return false;
         }
     }

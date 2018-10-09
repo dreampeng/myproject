@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/japi")
 public class PageController {
     @Autowired
     HttpServletRequest request;
