@@ -37,18 +37,18 @@ public class MyAspect {
     public Object aroundController(ProceedingJoinPoint joinPoint) {
         //把加密的参数解密
         Object[] objects = joinPoint.getArgs();
-        for (int x = 0; x < objects.length; x++) {
-            if(objects[x]==null){
-                continue;
-            }
-            if ("String".equals(objects[x].getClass().getSimpleName())) {
-                try {
-                    objects[x] = SecurityUtil.decrypt((String) objects[x]);
-                } catch (Exception e) {
-                    return null;
-                }
-            }
-        }
+//        for (int x = 0; x < objects.length; x++) {
+//            if(objects[x]==null){
+//                continue;
+//            }
+//            if ("String".equals(objects[x].getClass().getSimpleName())) {
+//                try {
+//                    objects[x] = SecurityUtil.decrypt((String) objects[x]);
+//                } catch (Exception e) {
+//                    return null;
+//                }
+//            }
+//        }
         Object returnValue;
         Map<String, String> retMap = null;
         try {
