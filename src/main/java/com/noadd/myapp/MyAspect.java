@@ -10,6 +10,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailAuthenticationException;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,21 +56,26 @@ public class MyAspect {
             returnValue = joinPoint.proceed(objects);
             retMap = (Map<String, String>) returnValue;
         } catch (Throwable throwable) {
-            Signature s = joinPoint.getSignature();
-            MethodSignature ms = (MethodSignature) s;
-            Method m = ms.getMethod();
-            Parameter[] parameters = m.getParameters();
-            String methodParam = "";
-            String paramValue = "";
-            for (Parameter temp : parameters) {
-                methodParam += ", " + temp.getType().getSimpleName() + " " + temp.getName();
+            if (throwable instanceof MailAuthenticationException){
+                retMap = new HashMap<>();
+                retMap.put("code", "9800");
+            }else {
+                Signature s = joinPoint.getSignature();
+                MethodSignature ms = (MethodSignature) s;
+                Method m = ms.getMethod();
+                Parameter[] parameters = m.getParameters();
+                String methodParam = "";
+                String paramValue = "";
+                for (Parameter temp : parameters) {
+                    methodParam += ", " + temp.getType().getSimpleName() + " " + temp.getName();
+                }
+                for (Object str : objects) {
+                    paramValue += ", " + str;
+                }
+                logToMail.error("方法名:" + m.getName() +
+                        "\n方法参数(" + ("".equals(methodParam) ? "" : methodParam.substring(2)) + ")," +
+                        "\n传入参数(" + ("".equals(paramValue) ? "" : paramValue.substring(2)) + ")", throwable);
             }
-            for (Object str : objects) {
-                paramValue += ", " + str;
-            }
-            logToMail.error("方法名:" + m.getName() +
-                    "\n方法参数(" + ("".equals(methodParam) ? "" : methodParam.substring(2)) + ")," +
-                    "\n传入参数(" + ("".equals(paramValue) ? "" : paramValue.substring(2)) + ")", throwable);
         }
         if (retMap == null) {
             retMap = new HashMap<>();

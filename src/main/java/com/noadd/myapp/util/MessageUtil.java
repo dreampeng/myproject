@@ -30,6 +30,9 @@ public class MessageUtil {
             case "9001":
                 msg = "用户名或密码错误";
                 break;
+            case "9800":
+                msg = "管理邮箱错误请联系管理员";
+                break;
             case "9997":
                 msg = "已经在其它地方登陆";
                 break;

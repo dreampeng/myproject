@@ -10,10 +10,10 @@
 function sendAjax(url, data, funsu, sync, mask) {
     var encrypt = new JSEncrypt();
     encrypt.setPublicKey(k);
-    var sendData = new Object();
-    for (var key in data) {
-        sendData[key] = encrypt.encrypt(data[key]);
-    }
+    // var sendData = new Object();
+    // for (var key in data) {
+    //     sendData[key] = encrypt.encrypt(data[key]);
+    // }
     var shadow;
     $.ajax({
         sync: sync,
@@ -21,7 +21,7 @@ function sendAjax(url, data, funsu, sync, mask) {
         type: 'POST',
         url: url,
         dataType: 'json',
-        data: sendData,
+        data: data,
         xhrFields: {
             withCredentials: true
         },
