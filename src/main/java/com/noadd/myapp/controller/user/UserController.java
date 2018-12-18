@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/japi/user")
+@RequestMapping(name = "/japi/user", produces = "application/json")
 public class UserController {
     @Autowired
     UserService userService;
@@ -102,6 +102,7 @@ public class UserController {
 
     /**
      * 用户登录
+     *
      * @param userName
      * @param userPass
      * @param validCode
@@ -122,6 +123,7 @@ public class UserController {
 
     /**
      * 获取用户登录详情
+     *
      * @return
      */
     @PostMapping("/logindetail")
