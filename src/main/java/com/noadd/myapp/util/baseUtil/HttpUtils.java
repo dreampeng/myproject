@@ -10,8 +10,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
@@ -24,7 +26,7 @@ import java.util.Map;
 
 public class HttpUtils {
 
-    public static JSONObject doGet(String url, Map<String, String> param, Map<String, String> hearder) throws Exception {
+    public static String doGet(String url, Map<String, String> param, Map<String, String> hearder) throws Exception {
 
         // 创建Httpclient对象
         CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -68,7 +70,7 @@ public class HttpUtils {
                 e.printStackTrace();
             }
         }
-        return JSONObject.parseObject(resultString);
+        return resultString;
     }
 
     public static JSONObject doGet(String url, JSONObject param) {
@@ -149,36 +151,40 @@ public class HttpUtils {
     }
 
 
-    public static JSONObject doPost(String url, String json) {
+    public static String doPost(String url, Map<String, String> data, Map<String, String> fromData, Map<String, String> header) {
         // 创建Httpclient对象
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        String resultString = null;
+        BasicCookieStore cookieStore = new BasicCookieStore();
+        BasicClientCookie cookie = new BasicClientCookie("name", "value");
+        cookieStore.addCookie(cookie);
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .setDefaultCookieStore(cookieStore)
+                .build();
         CloseableHttpResponse response = null;
-        JSONObject result = new JSONObject();
-        JSONObject param = JSONObject.parseObject(json);
         try {
+            if (data != null) {
+                String urlParam = "";
+                for (String key : data.keySet()) {
+                    url += "&" + key + "=" + data.get(key);
+                }
+                url += "?" + urlParam.substring(1);
+            }
             // 创建Http Post请求
             HttpPost httpPost = new HttpPost(url);
             // 创建参数列表
-            if (param != null) {
-                List<NameValuePair> paramList = new ArrayList<NameValuePair>();
-                for (String key : param.keySet()) {
-                    paramList.add(new BasicNameValuePair(key, param.getString(key)));
+            if (fromData != null) {
+                List<NameValuePair> paramList = new ArrayList<>();
+                for (String key : fromData.keySet()) {
+                    paramList.add(new BasicNameValuePair(key, fromData.get(key)));
                 }
                 // 模拟表单
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(paramList, "utf-8");
                 httpPost.setEntity(entity);
             }
             response = httpClient.execute(httpPost);
-            String resultString = EntityUtils.toString(response.getEntity(), "utf-8");
-            result = JSONObject.parseObject(resultString);
+            resultString = EntityUtils.toString(response.getEntity(), "utf-8");
         } catch (Exception e) {
 //            e.printStackTrace();
-            if (response != null) {
-                result.put("code", Integer.toString(response.getStatusLine().getStatusCode()));
-            } else {
-                result.put("code", "99999");
-                result.put("msg", "链接超时");
-            }
         } finally {
             try {
                 if (response != null) {
@@ -188,7 +194,7 @@ public class HttpUtils {
                 e.printStackTrace();
             }
         }
-        return result;
+        return resultString;
     }
 
     public static JSONObject getOnePageSs(String qqNum, String pSkey, Integer start, Integer limit, JSONObject ssJson) throws Exception {
@@ -210,8 +216,9 @@ public class HttpUtils {
         header.put("cookie", cookie);
         header.put("referer", "https://qzs.qq.com/qzone/app/mood_v6/html/index.html");
         header.put("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.80 Safari/537.36");
-        JSONObject result = doGet(url, param, header);
+        JSONObject result = JSONObject.parseObject(doGet(url, param, header));
         int code = result.getInteger("code");
+        ssJson.put("code", code);
         if (code != 0) {
             return ssJson;
         }
@@ -276,14 +283,35 @@ public class HttpUtils {
         return ssJson;
     }
 
+    public static int hash33(String o) {
+        int t = 0, e = 0, n = o.length();
+        for (; e < n; ++e) {
+            t += (t << 5) + o.charAt(e);
+        }
+        return 2147483647 & t;
+    }
+
+    public static void deleteSs(List<String> tids) {
+        String url = "https://user.qzone.qq.com/proxy/domain/taotao.qzone.qq.com/cgi-bin/emotion_cgi_delete_v6?" +;
+        Map<String, String> param = new HashMap<>();
+        param.put("qzonetoken", "");
+        param.put("g_tk", "1549933695");
+        Map<String,Object> dataParam = new HashMap<>();
+    }
+
     public static void main(String[] args) {
-        String pSkey = "Yzp3vd4MMqOL*1bQ7qUN299FOq1oNjzZB7oM5qKPrII_";
-        String qqNum = "910615337";
+        //var a,r=new RegExp("p_skey=(.{43}_)");if(a=document.cookie.match(r))console.log(a[1]);
+        String pSkey = "JV6loOQZ7IyJomGONDl0fnOtXbOg5yX2TNkyV*qj0tI_";
+        String qqNum = "815566704";
         JSONObject ss = new JSONObject();
         int start = 0, limit = 20, total, page = 1;
         while (true) {
             try {
                 ss = getOnePageSs(qqNum, pSkey, start, limit, ss);
+                if ("-3000".equals(ss.getString("code"))) {
+                    System.out.println("QQ号:" + qqNum + "登录失败");
+                    break;
+                }
                 total = ss.getInteger("total");
             } catch (Exception e) {
                 continue;
@@ -294,6 +322,5 @@ public class HttpUtils {
             }
             start += limit;
         }
-        System.out.println(ss);
     }
 }
