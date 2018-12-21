@@ -10,10 +10,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
@@ -154,18 +152,16 @@ public class HttpUtils {
     public static String doPost(String url, Map<String, String> data, Map<String, String> fromData, Map<String, String> header) {
         // 创建Httpclient对象
         String resultString = null;
-        BasicCookieStore cookieStore = new BasicCookieStore();
-        BasicClientCookie cookie = new BasicClientCookie("name", "value");
-        cookieStore.addCookie(cookie);
-        CloseableHttpClient httpClient = HttpClients.custom()
-                .setDefaultCookieStore(cookieStore)
-                .build();
+//        BasicCookieStore cookieStore = new BasicCookieStore();
+//        BasicClientCookie cookie = new BasicClientCookie("name", "value");
+//        cookieStore.addCookie(cookie);
+        CloseableHttpClient httpClient = HttpClients.createDefault();
         CloseableHttpResponse response = null;
         try {
             if (data != null) {
                 String urlParam = "";
                 for (String key : data.keySet()) {
-                    url += "&" + key + "=" + data.get(key);
+                    urlParam += "&" + key + "=" + data.get(key);
                 }
                 url += "?" + urlParam.substring(1);
             }
@@ -181,10 +177,15 @@ public class HttpUtils {
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(paramList, "utf-8");
                 httpPost.setEntity(entity);
             }
+            if (header != null) {
+                for (String key : header.keySet()) {
+                    httpPost.setHeader(key, header.get(key));
+                }
+            }
             response = httpClient.execute(httpPost);
             resultString = EntityUtils.toString(response.getEntity(), "utf-8");
         } catch (Exception e) {
-//            e.printStackTrace();
+            e.printStackTrace();
         } finally {
             try {
                 if (response != null) {
@@ -197,14 +198,10 @@ public class HttpUtils {
         return resultString;
     }
 
-    public static JSONObject getOnePageSs(String qqNum, String pSkey, Integer start, Integer limit, JSONObject ssJson) throws Exception {
+
+    public static JSONObject getOnePageSs(String uin, String pSkey, Integer start, Integer limit, JSONObject ssJson) throws Exception {
         String url = "https://h5.qzone.qq.com/proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6";
-        if (qqNum.length() < 10) {
-            for (int i = 0; i < 10 - qqNum.length(); i++) {
-                qqNum = "0" + qqNum;
-            }
-        }
-        String cookie = " uin=o" + qqNum + "; p_skey=" + pSkey + ";";
+        String cookie = " uin=" + uin + "; p_skey=" + pSkey + ";";
         Map<String, String> param = new HashMap<>();
         param.put("pos", Integer.toString(start));
         param.put("num", Integer.toString(limit));
@@ -291,25 +288,74 @@ public class HttpUtils {
         return 2147483647 & t;
     }
 
-    public static void deleteSs(List<String> tids) {
-        String url = "https://user.qzone.qq.com/proxy/domain/taotao.qzone.qq.com/cgi-bin/emotion_cgi_delete_v6?" +;
+    public static JSONObject deleteSs(String tid, String qq, String qzoneToken, String cookie) {
+        String url = "https://user.qzone.qq.com/proxy/domain/taotao.qzone.qq.com/cgi-bin/emotion_cgi_delete_v6";
         Map<String, String> param = new HashMap<>();
-        param.put("qzonetoken", "");
+        param.put("qzonetoken", qzoneToken);
         param.put("g_tk", "1549933695");
-        Map<String,Object> dataParam = new HashMap<>();
+        Map<String, String> dataParam = new HashMap<>();
+        dataParam.put("hostuin", qq);
+        dataParam.put("tid", tid);
+        dataParam.put("code_version", "1");
+        dataParam.put("format", "json");
+        Map<String, String> header = new HashMap<>();
+        header.put("cookie", cookie);
+        header.put("Content-Type", "application/x-www-form-urlencoded");
+        JSONObject result = JSONObject.parseObject(doPost(url, param, dataParam, header));
+        return result;
     }
 
-    public static void main(String[] args) {
-        //var a,r=new RegExp("p_skey=(.{43}_)");if(a=document.cookie.match(r))console.log(a[1]);
-        String pSkey = "JV6loOQZ7IyJomGONDl0fnOtXbOg5yX2TNkyV*qj0tI_";
-        String qqNum = "815566704";
+    public static String qzoneToken(String qq, String cookie) throws Exception {
+        Map<String, String> header = new HashMap<>();
+        header.put("cookie", cookie);
+        header.put("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.26 Safari/537.36 Core/1.63.6788.400 QQBrowser/10.3.2767.400");
+        String resultHtml = doGet("https://user.qzone.qq.com/" + qq, null, header);
+        return resultHtml.substring(resultHtml.indexOf("window.g_qzonetoken = (function(){ try{return ") + 47, resultHtml.indexOf(";} catch(e) {var xhr = new XMLHttpRequest();xhr.withCredentials = true;xhr.open('post', '//h5.qzone.qq.com/log/post/error/qzonetoken', true)") - 1);
+    }
+
+    /* 获取需要的cookie
+        var a, r ;
+        var s="";
+        r = new RegExp("p_skey=(.{43}_;)");
+        if (a = document.cookie.match(r)) {
+            s += " " + a[0];
+        }
+        r = new RegExp("skey=(@.{9};)");
+        if (a = document.cookie.match(r)) {
+            s += " " + a[0];
+        }
+        r = new RegExp("uin=(.{6,13};)");
+        if (a = document.cookie.match(r)) {
+            s += " " + a[0];
+        }
+        r = new RegExp("p_uin=(.{6,13});");
+        if (a = document.cookie.match(r)) {
+            s += " " + a[0];
+        }
+        r = new RegExp("pt4_token=(.{43}_);");
+        if (a = document.cookie.match(r)) {
+            s += " " + a[0];
+        }
+        console.log(s);
+    */
+
+
+    public static void main(String[] args) throws Exception {
+        String pSkey = "HAkd1fNkZdEFE0AA9UqCnGqRV2OTcLBmfXFORfDzBCk_";
+        String uin = "o0815566704";
+        String puin = "o0815566704";
+        String sky = "@QNTVCjNXX";
+        String pt4_token = "d8gWqEGGXMpWqu2yRTpnie5*9MfTLr2N48OQx2pC8cw_";
+        String cookie = "p_skey=" + pSkey + "; skey=" + sky + "; uin=" + uin + "; p_uin=" + puin + "; pt4_token=" + pt4_token + ";";
+        String deleteCookie = "p_skey=" + pSkey + "; p_uin=" + puin + "; ";
+        String qq = "815566704";
         JSONObject ss = new JSONObject();
         int start = 0, limit = 20, total, page = 1;
         while (true) {
             try {
-                ss = getOnePageSs(qqNum, pSkey, start, limit, ss);
+                ss = getOnePageSs(uin, pSkey, start, limit, ss);
                 if ("-3000".equals(ss.getString("code"))) {
-                    System.out.println("QQ号:" + qqNum + "登录失败");
+                    System.out.println("QQ号:" + qq + "登录失败");
                     break;
                 }
                 total = ss.getInteger("total");
@@ -322,5 +368,31 @@ public class HttpUtils {
             }
             start += limit;
         }
+        String qzoneToken = qzoneToken(qq, cookie);
+        System.out.println(ss);
+        System.out.println(qzoneToken);
+        List<String> tids = (List<String>) ss.get("tidList");
+        int i = 0, x = 0, y = 0;
+        while (i < tids.size()) {
+            String tid = tids.get(i);
+            JSONObject result = deleteSs(tid, qq, qzoneToken, deleteCookie);
+            if (result != null) {
+                int code = (int) result.get("code");
+                int subcode = (int) result.get("subcode");
+                if (code == 0 && (subcode != -200 || subcode != 0)) {
+                    System.out.println("刪除成功tid:" + tid);
+                    x++;
+                }if(code == -3001){
+                    //需要输入用户名密码
+                    i--;
+                } else {
+                    y++;
+                }
+            } else {
+                y++;
+            }
+            i++;
+        }
+        System.out.println("成功"+x+"条，失败"+y+"条");
     }
 }
