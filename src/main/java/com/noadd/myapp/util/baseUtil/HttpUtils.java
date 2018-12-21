@@ -383,7 +383,7 @@ public class HttpUtils {
                     System.out.println("刪除成功tid:" + tid);
                     x++;
                 }if(code == -3001){
-                    //需要输入用户名密码
+                    //需要输入验证码
                     i--;
                 } else {
                     y++;
