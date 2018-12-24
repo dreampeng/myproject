@@ -199,11 +199,22 @@ public class HttpUtils {
     }
 
 
-    public static JSONObject getOnePageSs(String uin, String pSkey, Integer start, Integer limit, JSONObject ssJson) throws Exception {
+    /**
+     * 获取单页说说
+     *
+     * @param uin    cookie值
+     * @param pSkey  cookie值
+     * @param page   页数
+     * @param limit  每页数量
+     * @param ssJson 上次调用本方法返回的JSONObject
+     * @return JSONObject
+     * @throws Exception 错误
+     */
+    public static JSONObject getOnePageSs(String uin, String pSkey, Integer page, Integer limit, JSONObject ssJson) throws Exception {
         String url = "https://h5.qzone.qq.com/proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6";
         String cookie = " uin=" + uin + "; p_skey=" + pSkey + ";";
         Map<String, String> param = new HashMap<>();
-        param.put("pos", Integer.toString(start));
+        param.put("pos", Integer.toString((page - 1) * limit));
         param.put("num", Integer.toString(limit));
         param.put("code_version", "1");
         param.put("format", "json");
@@ -288,6 +299,15 @@ public class HttpUtils {
         return 2147483647 & t;
     }
 
+    /**
+     * 删除说说
+     *
+     * @param tid        cookie值
+     * @param qq         QQ号
+     * @param qzoneToken cookie值
+     * @param cookie     cookie值
+     * @return
+     */
     public static JSONObject deleteSs(String tid, String qq, String qzoneToken, String cookie) {
         String url = "https://user.qzone.qq.com/proxy/domain/taotao.qzone.qq.com/cgi-bin/emotion_cgi_delete_v6";
         Map<String, String> param = new HashMap<>();
@@ -305,6 +325,13 @@ public class HttpUtils {
         return result;
     }
 
+    /**
+     * 获取qzt
+     * @param qq QQ号
+     * @param cookie    cookie
+     * @return String
+     * @throws Exception error
+     */
     public static String qzoneToken(String qq, String cookie) throws Exception {
         Map<String, String> header = new HashMap<>();
         header.put("cookie", cookie);
@@ -350,10 +377,10 @@ public class HttpUtils {
         String deleteCookie = "p_skey=" + pSkey + "; p_uin=" + puin + "; ";
         String qq = "815566704";
         JSONObject ss = new JSONObject();
-        int start = 0, limit = 20, total, page = 1;
+        int limit = 20, total, page = 1;
         while (true) {
             try {
-                ss = getOnePageSs(uin, pSkey, start, limit, ss);
+                ss = getOnePageSs(uin, pSkey, page, limit, ss);
                 if ("-3000".equals(ss.getString("code"))) {
                     System.out.println("QQ号:" + qq + "登录失败");
                     break;
@@ -363,10 +390,9 @@ public class HttpUtils {
                 continue;
             }
             System.out.println("已取到" + page++ + "页，共" + ss.getJSONArray("msgList").size() + "条，总共" + total + "条");
-            if (start + limit > total) {
+            if ((page * limit) > total) {
                 break;
             }
-            start += limit;
         }
         String qzoneToken = qzoneToken(qq, cookie);
         System.out.println(ss);
@@ -382,8 +408,9 @@ public class HttpUtils {
                 if (code == 0 && (subcode != -200 || subcode != 0)) {
                     System.out.println("刪除成功tid:" + tid);
                     x++;
-                }if(code == -3001){
-                    //需要输入验证码
+                }
+                if (code == -3001) {
+                    //需要输入验证码  可以对接一个打码接口  然后带上 验证码再次请求删除方法
                     i--;
                 } else {
                     y++;
@@ -393,6 +420,6 @@ public class HttpUtils {
             }
             i++;
         }
-        System.out.println("成功"+x+"条，失败"+y+"条");
+        System.out.println("成功" + x + "条，失败" + y + "条");
     }
 }
