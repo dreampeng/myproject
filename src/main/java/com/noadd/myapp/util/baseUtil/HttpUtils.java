@@ -327,8 +327,9 @@ public class HttpUtils {
 
     /**
      * 获取qzt
-     * @param qq QQ号
-     * @param cookie    cookie
+     *
+     * @param qq     QQ号
+     * @param cookie cookie
      * @return String
      * @throws Exception error
      */
@@ -368,11 +369,11 @@ public class HttpUtils {
 
 
     public static void main(String[] args) throws Exception {
-        String pSkey = "HAkd1fNkZdEFE0AA9UqCnGqRV2OTcLBmfXFORfDzBCk_";
+        String pSkey = "DHOCHWzDpgUqo55yx3nUPWU1Niek86Rrixe3ASCNUvM_";
+        String sky = "@7zIqroN0a";
         String uin = "o0815566704";
         String puin = "o0815566704";
-        String sky = "@QNTVCjNXX";
-        String pt4_token = "d8gWqEGGXMpWqu2yRTpnie5*9MfTLr2N48OQx2pC8cw_";
+        String pt4_token = "MT1oDQC7-hbPfOH8YB0EheJYWumyr7eXtfgsfn0Gxj8_";
         String cookie = "p_skey=" + pSkey + "; skey=" + sky + "; uin=" + uin + "; p_uin=" + puin + "; pt4_token=" + pt4_token + ";";
         String deleteCookie = "p_skey=" + pSkey + "; p_uin=" + puin + "; ";
         String qq = "815566704";
@@ -410,8 +411,7 @@ public class HttpUtils {
                     x++;
                 }
                 if (code == -3001) {
-                    //需要输入验证码  可以对接一个打码接口  然后带上 验证码再次请求删除方法
-                    i--;
+                    break;
                 } else {
                     y++;
                 }
@@ -420,6 +420,6 @@ public class HttpUtils {
             }
             i++;
         }
-        System.out.println("成功" + x + "条，失败" + y + "条");
+        System.out.println("成功" + x + "条，失败" + y + "条，之后超时");
     }
 }
