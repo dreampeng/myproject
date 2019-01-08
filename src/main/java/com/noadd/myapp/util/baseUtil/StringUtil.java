@@ -7,6 +7,7 @@
  */
 package com.noadd.myapp.util.baseUtil;
 
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -16,6 +17,16 @@ import java.util.regex.Pattern;
  */
 public class StringUtil {
 
+    /**
+     * 获取UUID
+     *
+     * @return uuid
+     */
+    public static String getUuid() {
+        String uuid = UUID.randomUUID().toString();
+        uuid = uuid.toUpperCase().replaceAll("-", "");
+        return uuid;
+    }
     /**
      * 将以某种分隔符分隔的字符串转化为long数组
      *
