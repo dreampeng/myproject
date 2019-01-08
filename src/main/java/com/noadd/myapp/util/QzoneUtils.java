@@ -22,17 +22,15 @@ public class QzoneUtils {
     /**
      * 获取单页说说
      *
-     * @param uin    cookie值
-     * @param pSkey  cookie值
      * @param page   页数
      * @param limit  每页数量
      * @param ssJson 上次调用本方法返回的JSONObject
      * @return JSONObject
      * @throws Exception 错误
      */
-    public JSONObject getOnePageSs(String uin, String pSkey, Integer page, Integer limit, JSONObject ssJson) throws Exception {
+    public JSONObject getOnePageSs( Integer page, Integer limit, JSONObject ssJson) throws Exception {
         String url = "https://user.qzone.qq.com/proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6";
-        String cookie = " uin=" + uin + "; p_skey=" + pSkey + ";";
+        uin=815566704&ftype=0&sort=0&pos=0&num=20&replynum=100&g_tk=195500329&callback=_preloadCallback&code_version=1&format=jsonp&need_private_comment=1&qzonetoken=7350932fe0f9b4a1a108e61c06e561eb7e436d4f2d1ebf2d52bfe60a3b45e4453d105e7aea39b2b4
         Map<String, String> param = new HashMap<>();
         param.put("pos", Integer.toString((page - 1) * limit));
         param.put("num", Integer.toString(limit));
@@ -41,10 +39,9 @@ public class QzoneUtils {
         param.put("need_private_comment", "1");
         param.put("g_tk", "2132853281");
         Map<String, String> header = new HashMap<>();
-        header.put("cookie", cookie);
         header.put("referer", "https://qzs.qq.com/qzone/app/mood_v6/html/index.html");
         header.put("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.80 Safari/537.36");
-        JSONObject result = JSONObject.parseObject(HttpUtils.doGet(url, param, header, null));
+        JSONObject result = JSONObject.parseObject(HttpUtils.doGet(url, param, header, context));
         int code = result.getInteger("code");
         ssJson.put("code", code);
         if (code != 0) {
@@ -201,7 +198,7 @@ public class QzoneUtils {
         int limit = 20, total, page = 1;
         while (true) {
             try {
-                ss = getOnePageSs(uin, p_skey, page, limit, ss);
+                ss = getOnePageSs(page, limit, ss);
                 if ("-3000".equals(ss.getString("code"))) {
                     System.out.println("QQ号:" + qq + "登录失败");
                     break;
