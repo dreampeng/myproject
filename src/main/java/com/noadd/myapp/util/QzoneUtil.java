@@ -169,7 +169,6 @@ public class QzoneUtil {
                 break;
             }
         }
-        System.out.println(ss);
         return ss;
     }
 
@@ -358,7 +357,7 @@ public class QzoneUtil {
      * "modifytime" : 1522764291,
      * "name" : "我家小乖乖",
      * "order" : 0,
-     * "pre" : "", 这是一个HTTP地址  需要把'\'去掉
+     * "pre" : "", 这是一个HTTP地址
      * "priv" : 1,
      * "pypriv" : 1,
      * "total" : 61,
@@ -380,7 +379,7 @@ public class QzoneUtil {
         param.put("pageNumModeSort", "40");
         param.put("pageNumModeClass", "15");
         JSONObject result = JSONObject.parseObject(HttpUtil.doGet(url, param, null, context));
-        return result.getJSONArray("albumListModeSort");
+        return result.getJSONObject("data").getJSONArray("albumListModeSort");
     }
 
     /**
@@ -519,7 +518,7 @@ public class QzoneUtil {
         //删除说说
         List<String> tids = (List<String>) ss.get("tidList");
         qzoneUtil.deleteSs(tids);
-        System.out.println(qzoneUtil.publishSs("123"));
+//        qzoneUtil.publishSs("123");
         System.out.println(qzoneUtil.getAlbum());
     }
 }
