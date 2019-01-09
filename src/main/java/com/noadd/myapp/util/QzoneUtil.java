@@ -56,7 +56,7 @@ public class QzoneUtil {
         JSONArray msglistTemp = result.getJSONArray("msglist");
         int total = result.getInteger("total");
         ssJson.put("total", total);
-        for (Object temp : msglistTemp) {
+        for (Object temp : msglistTemp == null ? new JSONArray() : msglistTemp) {
             JSONObject msgTemp = new JSONObject();
             JSONObject msg = (JSONObject) temp;
             //正文
@@ -161,7 +161,8 @@ public class QzoneUtil {
                 }
                 total = ss.getInteger("total");
             } catch (Exception e) {
-                continue;
+                e.printStackTrace();
+                break;
             }
             System.out.println("已取到" + page++ + "页，共" + ss.getJSONArray("msgList").size() + "条，总共" + total + "条");
             if ((page * limit) > total) {
@@ -253,6 +254,7 @@ public class QzoneUtil {
         Map<String, String> header = new HashMap<>();
         header.put("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.26 Safari/537.36 Core/1.63.6788.400 QQBrowser/10.3.2767.400");
         String resultHtml = HttpUtil.doGet(userQzoneUrl, null, header, context);
+        getCookieMap();
         String qzoneToken = resultHtml.substring(resultHtml.indexOf("window.g_qzonetoken = (function(){ try{return ") + 47, resultHtml.indexOf(";} catch(e) {var xhr = new XMLHttpRequest();xhr.withCredentials = true;xhr.open('post', '//h5.qzone.qq.com/log/post/error/qzonetoken', true)") - 1);
         addCookie("qzonetoken", qzoneToken);
     }
@@ -323,7 +325,7 @@ public class QzoneUtil {
     }
 
     /**
-     * 说说发布
+     * 说说发布 @{uin:@人qq} #话题内容# [/表情代码]
      *
      * @param content 内容
      * @return 结果 0成功  其余失败
@@ -343,6 +345,136 @@ public class QzoneUtil {
         formDate.put("format", "json");
         String result = HttpUtil.doPost(publishUrl, param, formDate, hearder, context);
         return Integer.toString((Integer) JSONObject.parseObject(result).get("code"));
+    }
+
+    /**
+     * 获取当前相册列表
+     *
+     * @return 数据  结构
+     * [{
+     * ...前面的删掉了，那个不确定是否有
+     * "id" : "V11ZcXYf3BbePb",
+     * "lastuploadtime" : 1522764291,
+     * "modifytime" : 1522764291,
+     * "name" : "我家小乖乖",
+     * "order" : 0,
+     * "pre" : "", 这是一个HTTP地址  需要把'\'去掉
+     * "priv" : 1,
+     * "pypriv" : 1,
+     * "total" : 61,
+     * "viewtype" : 5
+     * }]
+     * @throws Exception error
+     */
+    public JSONArray getAlbum() throws Exception {
+        String url = "https://h5.qzone.qq.com/proxy/domain/photo.qzone.qq.com/fcgi-bin/fcg_list_album_v3";
+        String qq_num = (String) cookieMap.get("qq_num");
+        Map<String, String> param = new HashMap<>();
+        param.put("g_tk", getG_tk());
+        param.put("hostUin", qq_num);
+        param.put("uin", qq_num);
+        param.put("inCharset", "utf-8");
+        param.put("outCharset", "utf-8");
+        param.put("format", "json");
+        //不知道用途可以去到
+        param.put("pageNumModeSort", "40");
+        param.put("pageNumModeClass", "15");
+        JSONObject result = JSONObject.parseObject(HttpUtil.doGet(url, param, null, context));
+        return result.getJSONArray("albumListModeSort");
+    }
+
+    /**
+     * 获取该相册所有图片
+     *
+     * @param albumId 相册ID
+     * @return 数据 结构
+     * 以下数据不一定有，重要的也就那些
+     * [ {
+     * "batchId": "1435553016100",
+     * "browser": 0,
+     * "cameratype": " ",
+     * "cp_flag": false,
+     * "cp_x": 453,
+     * "cp_y": 325,
+     * "desc": "",
+     * "exif": {
+     * "exposureCompensation": "",
+     * "exposureMode": "",
+     * "exposureProgram": "",
+     * "exposureTime": "",
+     * "flash": "",
+     * "fnumber": "",
+     * "focalLength": "",
+     * "iso": "",
+     * "lensModel": "",
+     * "make": "",
+     * "meteringMode": "",
+     * "model": "",
+     * "originalTime": ""
+     * },
+     * "forum": 0,
+     * "frameno": 0,
+     * "height": 640,
+     * "id": 0,
+     * "is_video": false,
+     * "is_weixin_mode": 0,
+     * "ismultiup": 0,
+     * "lloc": "NDR0cI.cMMrMkFXYhCsJ7d2zbZMHAAA!",
+     * "modifytime": 1435552970,
+     * "name": "2015-06-29",
+     * "origin": 0,
+     * "origin_upload": 0,
+     * "origin_url": "",
+     * "owner": "815566704",
+     * "ownername": "815566704",
+     * "photocubage": 53734,
+     * "phototype": 1,
+     * "picmark_flag": 0,
+     * "picrefer": 22,
+     * "platformId": 52,
+     * "platformSubId": 4,
+     * "poiName": "",
+     * "pre": "http://b184.photo.store.qq.com/psb?/V11ZcXYf3BbePb/pCqmMuX67DkOWjZlPq5d9sNuS2x.6O*XZ4TmiWw7uTc!/a/dO3ds22TBwAA&bo=wAOAAgAAAAABB2E!",
+     * "raw": "",
+     * "raw_upload": 0,
+     * "rawshoottime": "2015-06-29 12:41:17",
+     * "shoottime": "2015-06-29 ",
+     * "shorturl": "",
+     * "sloc": "NDR0cI.cMMrMkFXYhCsJ7d2zbZMHAAA!",
+     * "tag": "",
+     * "uploadtime": "2015-06-29 12:42:50",
+     * "url": "http://b184.photo.store.qq.com/psb?/V11ZcXYf3BbePb/pCqmMuX67DkOWjZlPq5d9sNuS2x.6O*XZ4TmiWw7uTc!/b/dO3ds22TBwAA&bo=wAOAAgAAAAABB2E!",
+     * "width": 960,
+     * "yurl": 0
+     * }
+     * ]
+     * @throws Exception error
+     */
+    public JSONArray getPhotos(String albumId) throws Exception {
+        String url = "https://h5.qzone.qq.com/proxy/domain/photo.qzone.qq.com/fcgi-bin/cgi_list_photo";
+        int start = 0, end = 50;
+        String qq_num = (String) cookieMap.get("qq_num");
+        Map<String, String> param = new HashMap<>();
+        param.put("g_tk", getG_tk());
+        param.put("hostUin", qq_num);
+        param.put("uin", qq_num);
+        param.put("topicId", albumId);
+        param.put("inCharset", "utf-8");
+        param.put("outCharset", "utf-8");
+        param.put("format", "json");
+        param.put("pageStart", Integer.toString(start));
+        param.put("pageNum", Integer.toString(end));
+        JSONObject result = JSONObject.parseObject(HttpUtil.doGet(url, param, null, context));
+        JSONArray photoes = result.getJSONArray("albumListModeSort");
+        int total = result.getInteger("totalInAlbum");
+        while (total > end) {
+            result = JSONObject.parseObject(HttpUtil.doGet(url, param, null, context));
+            total = result.getInteger("totalInAlbum");
+            photoes.addAll(result.getJSONArray("albumListModeSort"));
+            start += 50;
+            end += 50;
+        }
+        return photoes;
     }
 
     public static void main(String[] args) throws Exception {
@@ -381,12 +513,13 @@ public class QzoneUtil {
         FileUtil.delFile(qrPath);
         //二次登录
         qzoneUtil.loginAgain(qrResult);
-        System.out.println(qzoneUtil.getCookieMap());
+        System.out.println("登录成功！QQ:" + qzoneUtil.cookieMap.get("qq_num"));
         //获取说说
         JSONObject ss = qzoneUtil.getAllSs();
         //删除说说
         List<String> tids = (List<String>) ss.get("tidList");
         qzoneUtil.deleteSs(tids);
         System.out.println(qzoneUtil.publishSs("123"));
+        System.out.println(qzoneUtil.getAlbum());
     }
 }
