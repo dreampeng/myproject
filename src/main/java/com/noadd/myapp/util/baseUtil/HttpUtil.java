@@ -23,7 +23,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
-public class HttpUtils {
+public class HttpUtil {
 
     private static HttpClientContext getDeafultHttpClientContext() {
         return HttpClientContext.create();
@@ -167,9 +167,6 @@ public class HttpUtils {
         }
         // 创建Httpclient对象
         String resultString = null;
-//        BasicCookieStore cookieStore = new BasicCookieStore();
-//        BasicClientCookie cookie = new BasicClientCookie("name", "value");
-//        cookieStore.addCookie(cookie);
         CloseableHttpClient httpClient = HttpClients.createDefault();
         CloseableHttpResponse response = null;
         try {
