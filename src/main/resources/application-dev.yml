@@ -7,3 +7,14 @@ spring:
       url: jdbc:mysql://47.106.117.18:3306/apesing?useSSL=false&autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
       username: root
       password: Pp19953.1@
+  redis:
+    database: 0
+    host: 47.106.117.18
+    port: 6379
+    password: Pp19953.1
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: 20000ms
+        min-idle: 0
+    timeout: 20000ms

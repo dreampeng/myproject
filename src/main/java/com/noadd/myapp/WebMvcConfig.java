@@ -21,6 +21,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         //----------------前台拦截----------------
         //白名单
         List<String> excldePath = new ArrayList();
+        //测试
+        excldePath.add("/japi/test/**");
         //错误界面
         excldePath.add("/japi/error");
         //跳转到登陆页面
