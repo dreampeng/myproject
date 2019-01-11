@@ -1,5 +1,7 @@
 package com.noadd.myapp.util;
 
+import java.lang.reflect.Field;
+
 public class ParamUtil {
     public static boolean registvalidate(String userName, String userPass, String email) {
         if (RegularUtil.regularMatch(userName, RegularUtil.userName)) {

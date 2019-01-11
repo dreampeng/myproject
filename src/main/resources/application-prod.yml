@@ -2,7 +2,6 @@
 ###################  正式环境的profile  ###################
 ##########################################################
 spring:
-  profiles: produce
   datasource:
     url: jdbc:mysql://47.106.117.18:3306/apesing?useSSL=false&autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
     username: root

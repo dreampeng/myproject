@@ -28,13 +28,14 @@ public class QzoneUtil {
      *
      * @param page   页数
      * @param limit  每页数量
+     * @param uin    指定获取说说QQ号码
      * @param ssJson 上次调用本方法返回的JSONObject
      * @throws Exception 错误
      */
-    public void getOnePageSs(Integer page, Integer limit, JSONObject ssJson) throws Exception {
+    public void getOnePageSs(Integer page, Integer limit, String uin, JSONObject ssJson) throws Exception {
         String url = "https://user.qzone.qq.com/proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6";
         Map<String, String> param = new HashMap<>();
-        param.put("uin", (String) getCookieMap().get("qq_num"));
+        param.put("uin", uin);
         param.put("pos", Integer.toString((page - 1) * limit));
         param.put("num", Integer.toString(limit));
         param.put("replynum", "100");
@@ -154,7 +155,7 @@ public class QzoneUtil {
         int limit = 20, total, page = 1;
         while (true) {
             try {
-                getOnePageSs(page, limit, ss);
+                getOnePageSs(page, limit, (String) getCookieMap().get("qq_num"), ss);
                 if ("-3000".equals(ss.getString("code"))) {
                     System.out.println("QQ号:" + cookieMap.get("qq_num") + "登录失败");
                     break;
@@ -292,6 +293,7 @@ public class QzoneUtil {
         newCookie.setExpiryDate(cookieTemp.getExpiryDate());
         newCookie.setPath(cookieTemp.getPath());
         cookieStore.addCookie(newCookie);
+        cookieMap.put(name, value);
     }
 
     /**
@@ -513,12 +515,120 @@ public class QzoneUtil {
         //二次登录
         qzoneUtil.loginAgain(qrResult);
         System.out.println("登录成功！QQ:" + qzoneUtil.cookieMap.get("qq_num"));
-        //获取说说
-        JSONObject ss = qzoneUtil.getAllSs();
-        //删除说说
-        List<String> tids = (List<String>) ss.get("tidList");
-        qzoneUtil.deleteSs(tids);
+//        //获取说说
+//        JSONObject ss = qzoneUtil.getAllSs();
+//        //删除说说
+//        List<String> tids = (List<String>) ss.get("tidList");
+//        qzoneUtil.deleteSs(tids);
 //        qzoneUtil.publishSs("123");
-        System.out.println(qzoneUtil.getAlbum());
+//        System.out.println(qzoneUtil.getAlbum());
+        qzoneUtil.miaoZhan();
+    }
+
+    /**
+     * 赞说说
+     *
+     * @param uin    发送人uin
+     * @param key    说说ID
+     * @param appid  说说类型
+     * @param unikey 说说类型
+     * @param curkey 说说类型
+     * @param isLike 赞或取消
+     */
+    public boolean doLike(String uin, String key, String appid, String unikey, String curkey, boolean isLike) {
+        String url = "https://user.qzone.qq.com/proxy/domain/w.qzone.qq.com/cgi-bin/likes/";
+        if (isLike) {
+            url += "internal_dolike_app";
+        } else {
+            url += "internal_unlike_app";
+        }
+        String type;
+        switch (appid) {
+            case "4":
+                type = "batchphoto";
+                break;
+            case "311":
+                type = "mood";
+                break;
+            default:
+                type = "mood";
+        }
+        Map<String, String> param = new HashMap<>();
+        param.put("qzonetoken", (String) cookieMap.get("qzonetoken"));
+        param.put("g_tk", getG_tk());
+        Map<String, String> data = new HashMap<>();
+        data.put("curkey", curkey);
+        data.put("unikey", unikey);
+        data.put("appid", appid);
+        Map<String, String> header = new HashMap<>();
+        header.put("Content-Type", "application/x-www-form-urlencoded");
+        return HttpUtil.doPost(url, param, data, header, context).contains("\"msg\":\"succ\"");
+    }
+
+    /**
+     * 刷新最新说说 20条
+     *
+     * @return
+     * @throws Exception error
+     */
+    public List<Map<String, String>> getNewSs() throws Exception {
+        String url = "https://user.qzone.qq.com/proxy/domain/ic2.qzone.qq.com/cgi-bin/feeds/feeds3_html_more";
+        Map<String, String> param = new HashMap<>();
+        param.put("qzonetoken", (String) cookieMap.get("qzonetoken"));
+        param.put("g_tk", getG_tk());
+        param.put("useutf8", "1");
+        param.put("count", "20");
+        param.put("begintime", "1");
+        param.put("filter", "all");
+        param.put("format", "json");
+        param.put("uin", (String) cookieMap.get("qq_num"));
+        //不传会默认取
+//        param.put("begintime","1");
+        JSONObject object = JSONObject.parseObject(HttpUtil.doGet(url, param, null, context));
+        List<Map<String, String>> result = new ArrayList<>();
+        if (0 == (int) object.get("code")) {
+            JSONArray datas = (JSONArray) ((Map<String, Object>) object.get("data")).get("data");
+            for (Object dataTemp : datas) {
+                if (dataTemp == null) {
+                    continue;
+                }
+                JSONObject data = (JSONObject) dataTemp;
+                if (((String) data.get("html")).contains("cancellike")) {
+                    continue;
+                }
+                String html = data.getString("html");
+                Map<String, String> temp = new HashMap<>();
+                temp.put("uin", (String) data.get("uin"));
+                temp.put("key", (String) data.get("key"));
+                temp.put("appid", (String) data.get("appid"));
+                String unikey = html.substring(html.indexOf("data-unikey=\"") + 13, html.indexOf("\" data-curkey=\""));
+                String curkey = html.substring(html.indexOf("data-curkey=\"") + 13,
+                                !html.contains("\" data-clicklog=\"like\"")
+                                ? html.indexOf("\" data-clicklog=\"cancellike\"")
+                                : html.indexOf("\" data-clicklog=\"like\""));
+                temp.put("unikey", unikey);
+                temp.put("curkey", curkey);
+                result.add(temp);
+            }
+        }
+        return result;
+    }
+
+    public void miaoZhan() throws Exception {
+        List<Map<String, String>> newSs;
+        while (true) {
+            newSs = getNewSs();
+            for (Map<String, String> ss : newSs) {
+                String uin = ss.get("uin");
+                String key = ss.get("key");
+                String appid = ss.get("appid");
+                String unikey = ss.get("unikey");
+                String curkey = ss.get("curkey");
+                if (doLike(uin, key, appid, unikey, curkey, true)) {
+                    System.out.println(uin + "----" + key);
+                }
+            }
+            Thread.sleep(10000);
+        }
     }
 }

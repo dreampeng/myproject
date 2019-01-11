@@ -23,6 +23,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         List<String> excldePath = new ArrayList();
         //测试
         excldePath.add("/japi/test/**");
+        //空间相关
+        excldePath.add("/japi/qzone/**");
         //错误界面
         excldePath.add("/japi/error");
         //跳转到登陆页面
