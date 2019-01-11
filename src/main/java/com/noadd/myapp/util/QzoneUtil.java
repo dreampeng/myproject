@@ -16,11 +16,18 @@ import java.util.List;
 import java.util.Map;
 
 public class QzoneUtil {
+    public QzoneUtil(){
+        context = new HttpClientContext();
+    }
     private HttpClientContext context;
     private Map<String, Object> cookieMap;
 
-    public QzoneUtil() {
-        context = HttpClientContext.create();
+    public HttpClientContext getContext() {
+        return context;
+    }
+
+    public void setContext(HttpClientContext context) {
+        this.context = context;
     }
 
     /**
@@ -218,10 +225,11 @@ public class QzoneUtil {
      * @return 二维码地址
      * @throws Exception error
      */
-    public String ptqrshow() throws Exception {
+    public String ptqrshow(String path) throws Exception {
         String ptqrshowUrl = "https://ssl.ptlogin2.qq.com/ptqrshow?" +
                 "appid=549000912&e=2&l=M&s=3&d=72&v=4&t=0.23397805982077213&daid=5&pt_3rd_aid=0";
-        String path = "C:\\Users\\Administrator\\Desktop\\" + StringUtil.getUuid() + ".png";
+//        String uuid = StringUtil.getUuid() + ".png";
+//        path += uuid;
         HttpUtil.doGetPic(ptqrshowUrl, path, null, null, context);
         return path;
     }
@@ -481,13 +489,25 @@ public class QzoneUtil {
     public static void main(String[] args) throws Exception {
         QzoneUtil qzoneUtil = new QzoneUtil();
         //生成二维码
-        String qrPath = qzoneUtil.ptqrshow();
+        String qrPath = qzoneUtil.ptqrshow("C:\\Users\\Administrator\\Desktop\\1.png");
         System.out.println("请扫描二维码，地址：" + qrPath);
+        qzoneUtil.login("C:\\Users\\Administrator\\Desktop\\"+qrPath);
+        System.out.println("登录成功！QQ:" + qzoneUtil.cookieMap.get("qq_num"));
+//        //获取说说
+//        JSONObject ss = qzoneUtil.getAllSs();
+//        //删除说说
+//        List<String> tids = (List<String>) ss.get("tidList");
+//        qzoneUtil.deleteSs(tids);
+//        qzoneUtil.publishSs("123");
+//        System.out.println(qzoneUtil.getAlbum());
+        qzoneUtil.miaoZhan();
+    }
+    public void login(String path) throws Exception {
         //轮询二维码状态
         String qrResult;
         while (true) {
             //获取二维码状态
-            qrResult = qzoneUtil.ptqrlogin();
+            qrResult = ptqrlogin();
             Thread.sleep(1000);
             //不存在返回结果
             if (!qrResult.contains("ptuiCB('")) {
@@ -501,7 +521,7 @@ public class QzoneUtil {
             if (qrResult.contains("ptuiCB('65',")) {
                 System.out.println(qrResult);
                 //删除二维码
-                FileUtil.delFile(qrPath);
+                FileUtil.delFile(path);
                 return;
             }
             //登录成功
@@ -511,20 +531,10 @@ public class QzoneUtil {
             }
         }
         //删除二维码
-        FileUtil.delFile(qrPath);
+        FileUtil.delFile(path);
         //二次登录
-        qzoneUtil.loginAgain(qrResult);
-        System.out.println("登录成功！QQ:" + qzoneUtil.cookieMap.get("qq_num"));
-//        //获取说说
-//        JSONObject ss = qzoneUtil.getAllSs();
-//        //删除说说
-//        List<String> tids = (List<String>) ss.get("tidList");
-//        qzoneUtil.deleteSs(tids);
-//        qzoneUtil.publishSs("123");
-//        System.out.println(qzoneUtil.getAlbum());
-        qzoneUtil.miaoZhan();
+        loginAgain(qrResult);
     }
-
     /**
      * 赞说说
      *
@@ -588,6 +598,7 @@ public class QzoneUtil {
         List<Map<String, String>> result = new ArrayList<>();
         if (0 == (int) object.get("code")) {
             JSONArray datas = (JSONArray) ((Map<String, Object>) object.get("data")).get("data");
+            System.out.println(datas.size());
             for (Object dataTemp : datas) {
                 if (dataTemp == null) {
                     continue;
@@ -603,7 +614,7 @@ public class QzoneUtil {
                 temp.put("appid", (String) data.get("appid"));
                 String unikey = html.substring(html.indexOf("data-unikey=\"") + 13, html.indexOf("\" data-curkey=\""));
                 String curkey = html.substring(html.indexOf("data-curkey=\"") + 13,
-                                !html.contains("\" data-clicklog=\"like\"")
+                        !html.contains("\" data-clicklog=\"like\"")
                                 ? html.indexOf("\" data-clicklog=\"cancellike\"")
                                 : html.indexOf("\" data-clicklog=\"like\""));
                 temp.put("unikey", unikey);
@@ -615,6 +626,7 @@ public class QzoneUtil {
     }
 
     public void miaoZhan() throws Exception {
+        System.out.println("开始");
         List<Map<String, String>> newSs;
         while (true) {
             newSs = getNewSs();
