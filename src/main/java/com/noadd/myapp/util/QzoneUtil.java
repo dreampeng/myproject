@@ -2,6 +2,7 @@ package com.noadd.myapp.util;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.noadd.myapp.redis.RedisManager;
 import com.noadd.myapp.util.baseUtil.FileUtil;
 import com.noadd.myapp.util.baseUtil.HttpUtil;
 import com.noadd.myapp.util.baseUtil.StringUtil;
@@ -10,15 +11,23 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class QzoneUtil {
-    public QzoneUtil(){
+    public QzoneUtil() {
         context = new HttpClientContext();
     }
+
+    public QzoneUtil(List<Cookie> cookieList) throws Exception {
+        context = HttpClientContext.create();
+        HttpUtil.doGet("https://qzone.qq.com", null, null, context);
+        getCookieMap();
+        for (Cookie cookie : cookieList) {
+            context.getCookieStore().addCookie(cookie);
+            cookieMap.put(cookie.getName(), cookie.getValue());
+        }
+    }
+
     private HttpClientContext context;
     private Map<String, Object> cookieMap;
 
@@ -29,6 +38,7 @@ public class QzoneUtil {
     public void setContext(HttpClientContext context) {
         this.context = context;
     }
+
 
     /**
      * 获取单页说说
@@ -228,8 +238,6 @@ public class QzoneUtil {
     public String ptqrshow(String path) throws Exception {
         String ptqrshowUrl = "https://ssl.ptlogin2.qq.com/ptqrshow?" +
                 "appid=549000912&e=2&l=M&s=3&d=72&v=4&t=0.23397805982077213&daid=5&pt_3rd_aid=0";
-//        String uuid = StringUtil.getUuid() + ".png";
-//        path += uuid;
         HttpUtil.doGetPic(ptqrshowUrl, path, null, null, context);
         return path;
     }
@@ -486,12 +494,12 @@ public class QzoneUtil {
         return photoes;
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void ss(String[] args) throws Exception {
         QzoneUtil qzoneUtil = new QzoneUtil();
         //生成二维码
         String qrPath = qzoneUtil.ptqrshow("C:\\Users\\Administrator\\Desktop\\1.png");
         System.out.println("请扫描二维码，地址：" + qrPath);
-        qzoneUtil.login("C:\\Users\\Administrator\\Desktop\\"+qrPath);
+        qzoneUtil.login("C:\\Users\\Administrator\\Desktop\\" + qrPath);
         System.out.println("登录成功！QQ:" + qzoneUtil.cookieMap.get("qq_num"));
 //        //获取说说
 //        JSONObject ss = qzoneUtil.getAllSs();
@@ -502,13 +510,44 @@ public class QzoneUtil {
 //        System.out.println(qzoneUtil.getAlbum());
         qzoneUtil.miaoZhan();
     }
-    public void login(String path) throws Exception {
+
+    //查询二维码状态
+    public String loginOnce(String path) throws Exception {
         //轮询二维码状态
         String qrResult;
+        String retStr = null;
+        //获取二维码状态
+        qrResult = ptqrlogin();
+        //未过期或认证中
+        if (qrResult.contains("ptuiCB('66',") || qrResult.contains("ptuiCB('67',")) {
+            retStr = "0";
+        }
+        //已过期
+        if (qrResult.contains("ptuiCB('65',")) {
+            retStr = "-1";
+        }
+        //登录成功
+        if (qrResult.contains("ptuiCB('0'") && qrResult.contains("登录成功")) {
+            qrResult = qrResult.split("','")[2];
+            //二次登录
+            loginAgain(qrResult);
+            retStr = (String) cookieMap.get("qq_num");
+        }
+        if (!"0".equals(retStr)) {
+            FileUtil.delFile(path);
+        }
+        return retStr;
+    }
+
+    //轮询查询
+    public String login(String path) throws Exception {
+        //轮询二维码状态
+        String qrResult;
+        String retStr = "-1";
         while (true) {
+            Thread.sleep(1000);
             //获取二维码状态
             qrResult = ptqrlogin();
-            Thread.sleep(1000);
             //不存在返回结果
             if (!qrResult.contains("ptuiCB('")) {
                 break;
@@ -519,14 +558,13 @@ public class QzoneUtil {
             }
             //已过期
             if (qrResult.contains("ptuiCB('65',")) {
-                System.out.println(qrResult);
-                //删除二维码
-                FileUtil.delFile(path);
-                return;
+                retStr = "0";
+                break;
             }
             //登录成功
             if (qrResult.contains("ptuiCB('0'") && qrResult.contains("登录成功")) {
                 qrResult = qrResult.split("','")[2];
+                retStr = (String) cookieMap.get("qq_num");
                 break;
             }
         }
@@ -534,7 +572,9 @@ public class QzoneUtil {
         FileUtil.delFile(path);
         //二次登录
         loginAgain(qrResult);
+        return retStr;
     }
+
     /**
      * 赞说说
      *
@@ -588,7 +628,6 @@ public class QzoneUtil {
         param.put("g_tk", getG_tk());
         param.put("useutf8", "1");
         param.put("count", "20");
-        param.put("begintime", "1");
         param.put("filter", "all");
         param.put("format", "json");
         param.put("uin", (String) cookieMap.get("qq_num"));
@@ -598,7 +637,6 @@ public class QzoneUtil {
         List<Map<String, String>> result = new ArrayList<>();
         if (0 == (int) object.get("code")) {
             JSONArray datas = (JSONArray) ((Map<String, Object>) object.get("data")).get("data");
-            System.out.println(datas.size());
             for (Object dataTemp : datas) {
                 if (dataTemp == null) {
                     continue;
@@ -612,14 +650,23 @@ public class QzoneUtil {
                 temp.put("uin", (String) data.get("uin"));
                 temp.put("key", (String) data.get("key"));
                 temp.put("appid", (String) data.get("appid"));
-                String unikey = html.substring(html.indexOf("data-unikey=\"") + 13, html.indexOf("\" data-curkey=\""));
-                String curkey = html.substring(html.indexOf("data-curkey=\"") + 13,
-                        !html.contains("\" data-clicklog=\"like\"")
-                                ? html.indexOf("\" data-clicklog=\"cancellike\"")
-                                : html.indexOf("\" data-clicklog=\"like\""));
-                temp.put("unikey", unikey);
-                temp.put("curkey", curkey);
-                result.add(temp);
+                try {
+                    if (html.contains("<div class=\"f-single-top\" data-istop=\"\">    <span>    好友热播    </span> ") ||
+                            html.contains("<div class=\"f-single-top\"><span>广告</span>")) {
+                        //广告或好友热播 跳过
+                        continue;
+                    }
+                    String unikey = html.substring(html.indexOf("data-unikey=\"") + 13, html.indexOf("\" data-curkey=\""));
+                    String curkey = html.substring(html.indexOf("data-curkey=\"") + 13,
+                            !html.contains("\" data-clicklog=\"like\"")
+                                    ? html.indexOf("\" data-clicklog=\"cancellike\"")
+                                    : html.indexOf("\" data-clicklog=\"like\""));
+                    temp.put("unikey", unikey);
+                    temp.put("curkey", curkey);
+                    result.add(temp);
+                } catch (Exception e) {
+                    //广告之类的东西直接不予处理
+                }
             }
         }
         return result;
@@ -630,17 +677,33 @@ public class QzoneUtil {
         List<Map<String, String>> newSs;
         while (true) {
             newSs = getNewSs();
-            for (Map<String, String> ss : newSs) {
-                String uin = ss.get("uin");
-                String key = ss.get("key");
-                String appid = ss.get("appid");
-                String unikey = ss.get("unikey");
-                String curkey = ss.get("curkey");
-                if (doLike(uin, key, appid, unikey, curkey, true)) {
-                    System.out.println(uin + "----" + key);
-                }
-            }
-            Thread.sleep(10000);
+            likes(newSs);
+            Thread.sleep(5000);
         }
+    }
+
+    private void likes(List<Map<String, String>> newSs) {
+        for (Map<String, String> ss : newSs) {
+            String uin = ss.get("uin");
+            String key = ss.get("key");
+            String appid = ss.get("appid");
+            String unikey = ss.get("unikey");
+            String curkey = ss.get("curkey");
+            if (doLike(uin, key, appid, unikey, curkey, true)) {
+                System.out.println(uin + "----" + key);
+            }
+        }
+    }
+
+    public void miaoZhan(String qq, RedisManager redisManager) throws Exception {
+        System.out.println("开始" + qq);
+        List<Map<String, String>> newSs;
+        while (redisManager.select(qq) != null && (boolean) redisManager.select(qq)) {
+            newSs = getNewSs();
+            System.out.println(newSs.size());
+            likes(newSs);
+            Thread.sleep(500);
+        }
+        System.out.println("结束" + qq);
     }
 }

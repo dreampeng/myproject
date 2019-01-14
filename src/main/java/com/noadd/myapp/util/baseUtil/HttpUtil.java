@@ -244,8 +244,13 @@ public class HttpUtil {
                 byte[] buffer = new byte[initialStream.available()];
                 initialStream.read(buffer);
                 File targetFile = new File(path);
+                if (!targetFile.getParentFile().exists()) {
+                    targetFile.getParentFile().mkdirs();
+                    Runtime.getRuntime().exec("chmod -R 755 " + targetFile.getParentFile().getPath());
+                }
                 OutputStream outStream = new FileOutputStream(targetFile);
                 outStream.write(buffer);
+                Runtime.getRuntime().exec("chmod -R 744 " + targetFile.getPath());
             } else {
                 throw new Exception("请求报错");
             }

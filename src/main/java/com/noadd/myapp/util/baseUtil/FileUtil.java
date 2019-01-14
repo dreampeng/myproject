@@ -1,7 +1,5 @@
 package com.noadd.myapp.util.baseUtil;
 
-import org.w3c.dom.Document;
-
 import java.io.*;
 
 /**
