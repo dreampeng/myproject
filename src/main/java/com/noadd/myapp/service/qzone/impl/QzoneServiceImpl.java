@@ -15,8 +15,8 @@ import java.util.List;
  **/
 @Service
 public class QzoneServiceImpl implements QzoneService {
-//        private static String PATH = "/opt/www/qrcode/";
-    private static String PATH = "E:/code/myproject/target/myapp-0.0.1-SNAPSHOT/qrcode/";
+            private static String PATH = "/opt/www/qrcode/";
+//    private static String PATH = "E:/code/myproject/target/myapp-0.0.1-SNAPSHOT/qrcode/";
     private final RedisManager redisManager;
     private static String COOKIEPRE = "QZCOOKIE";
     private static String MZSTATEPRE = "MZSTATE";
@@ -49,7 +49,9 @@ public class QzoneServiceImpl implements QzoneService {
         }
         QzoneUtil qzoneUtil = new QzoneUtil(cookieMapList);
         qq = qzoneUtil.loginOnce(PATH + qq + ".png");
-        saveCookie(qq, qzoneUtil);
+        if (!"0".equals(qq)) {
+            saveCookie(qq, qzoneUtil);
+        }
         return qq;
     }
 

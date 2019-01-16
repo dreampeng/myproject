@@ -635,6 +635,7 @@ public class QzoneUtil {
 //        param.put("begintime","1");
         JSONObject object = JSONObject.parseObject(HttpUtil.doGet(url, param, null, context));
         List<Map<String, String>> result = new ArrayList<>();
+        System.out.println("code:" + object.get("code"));
         if (0 == (int) object.get("code")) {
             JSONArray datas = (JSONArray) ((Map<String, Object>) object.get("data")).get("data");
             for (Object dataTemp : datas) {
@@ -665,9 +666,10 @@ public class QzoneUtil {
                     temp.put("curkey", curkey);
                     result.add(temp);
                 } catch (Exception e) {
-                    //广告之类的东西直接不予处理
+                    e.printStackTrace();
                 }
             }
+            System.out.println("获取到：" + datas.size() + " 新：" + result.size());
         }
         return result;
     }
@@ -700,9 +702,8 @@ public class QzoneUtil {
         List<Map<String, String>> newSs;
         while (redisManager.select(qq) != null && (boolean) redisManager.select(qq)) {
             newSs = getNewSs();
-            System.out.println(newSs.size());
             likes(newSs);
-            Thread.sleep(500);
+            Thread.sleep(2000);
         }
         System.out.println("结束" + qq);
     }
