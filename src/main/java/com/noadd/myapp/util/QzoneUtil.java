@@ -671,6 +671,7 @@ public class QzoneUtil {
             }
             System.out.println("获取到：" + datas.size() + " 新：" + result.size());
         } else {
+            System.out.println(object.toJSONString());
             return null;
         }
         return result;
