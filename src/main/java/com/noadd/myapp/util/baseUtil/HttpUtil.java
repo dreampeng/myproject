@@ -1,7 +1,6 @@
 package com.noadd.myapp.util.baseUtil;
 
 import com.alibaba.fastjson.JSONObject;
-import com.noadd.myapp.util.securityUtil.Base64Util;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;

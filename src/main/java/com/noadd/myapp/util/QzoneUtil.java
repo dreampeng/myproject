@@ -15,7 +15,7 @@ import java.util.*;
 
 public class QzoneUtil {
     public QzoneUtil() {
-        context = new HttpClientContext();
+        context = HttpClientContext.create();
     }
 
     public QzoneUtil(List<Cookie> cookieList) throws Exception {
@@ -670,6 +670,8 @@ public class QzoneUtil {
                 }
             }
             System.out.println("获取到：" + datas.size() + " 新：" + result.size());
+        } else {
+            return null;
         }
         return result;
     }
@@ -702,6 +704,10 @@ public class QzoneUtil {
         List<Map<String, String>> newSs;
         while (redisManager.select(qq) != null && (boolean) redisManager.select(qq)) {
             newSs = getNewSs();
+            if (newSs == null) {
+                redisManager.delete(qq);
+                System.out.println("登录已超时" + qq);
+            }
             likes(newSs);
             Thread.sleep(2000);
         }
