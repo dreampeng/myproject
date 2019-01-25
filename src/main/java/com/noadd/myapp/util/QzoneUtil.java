@@ -494,22 +494,6 @@ public class QzoneUtil {
         return photoes;
     }
 
-    public static void ss(String[] args) throws Exception {
-        QzoneUtil qzoneUtil = new QzoneUtil();
-        //生成二维码
-        String qrPath = qzoneUtil.ptqrshow("C:\\Users\\Administrator\\Desktop\\1.png");
-        System.out.println("请扫描二维码，地址：" + qrPath);
-        qzoneUtil.login("C:\\Users\\Administrator\\Desktop\\" + qrPath);
-        System.out.println("登录成功！QQ:" + qzoneUtil.cookieMap.get("qq_num"));
-//        //获取说说
-//        JSONObject ss = qzoneUtil.getAllSs();
-//        //删除说说
-//        List<String> tids = (List<String>) ss.get("tidList");
-//        qzoneUtil.deleteSs(tids);
-//        qzoneUtil.publishSs("123");
-//        System.out.println(qzoneUtil.getAlbum());
-        qzoneUtil.miaoZhan();
-    }
 
     //查询二维码状态
     public String loginOnce(String path) throws Exception {
@@ -677,16 +661,6 @@ public class QzoneUtil {
         return result;
     }
 
-    public void miaoZhan() throws Exception {
-        System.out.println("开始");
-        List<Map<String, String>> newSs;
-        while (true) {
-            newSs = getNewSs();
-            likes(newSs);
-            Thread.sleep(5000);
-        }
-    }
-
     private void likes(List<Map<String, String>> newSs) {
         for (Map<String, String> ss : newSs) {
             String uin = ss.get("uin");
@@ -700,18 +674,17 @@ public class QzoneUtil {
         }
     }
 
-    public void miaoZhan(String qq, RedisManager redisManager) throws Exception {
-        System.out.println("开始" + qq);
-        List<Map<String, String>> newSs;
-        while (redisManager.select(qq) != null && (boolean) redisManager.select(qq)) {
+    public int miaoZhan() {
+        try {
+            List<Map<String, String>> newSs;
             newSs = getNewSs();
             if (newSs == null) {
-                redisManager.delete(qq);
-                System.out.println("登录已超时" + qq);
+                return -1;
             }
             likes(newSs);
-            Thread.sleep(2000);
+            return 0;
+        } catch (Exception e) {
+            return -2;
         }
-        System.out.println("结束" + qq);
     }
 }

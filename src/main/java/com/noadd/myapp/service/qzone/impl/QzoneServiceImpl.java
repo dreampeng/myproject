@@ -9,6 +9,8 @@ import org.apache.http.cookie.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -17,11 +19,11 @@ import java.util.List;
  **/
 @Service
 public class QzoneServiceImpl implements QzoneService {
-    private static String PATH = "/opt/www/qrcode/";
-    //    private static String PATH = "E:/code/myproject/target/myapp-0.0.1-SNAPSHOT/qrcode/";
+        private static String PATH = "/opt/www/qrcode/";
+//    private static String PATH = "E:/code/myproject/target/myapp-0.0.1-SNAPSHOT/qrcode/";
     private final RedisManager redisManager;
     private static String COOKIEPRE = "QZCOOKIE";
-    private static String MZSTATEPRE = "MZSTATE";
+    private static String MZSLIST = "MZSLIST";
 
     @Autowired
     public QzoneServiceImpl(RedisManager redisManager) {
@@ -51,7 +53,16 @@ public class QzoneServiceImpl implements QzoneService {
         }
         QzoneUtil qzoneUtil = new QzoneUtil(cookieMapList);
         qq = qzoneUtil.loginOnce(PATH + qq + ".png");
+        redisManager.delete(COOKIEPRE + qq);
         if (!"0".equals(qq)) {
+            List<String> qqList = (List<String>) redisManager.select(MZSLIST);
+            if (qqList == null) {
+                qqList = new ArrayList<>();
+            }
+            if (!qqList.contains(qq)) {
+                qqList.add(qq);
+                redisManager.update(MZSLIST, qqList);
+            }
             saveCookie(qq, qzoneUtil);
         }
         return qq;
@@ -63,29 +74,53 @@ public class QzoneServiceImpl implements QzoneService {
     private LogToMail logToMail;
 
     @Override
-    public String miaoZhan(String qq) throws Exception {
-        List<Cookie> cookieMapList = (List<Cookie>) redisManager.select(COOKIEPRE + qq);
-        if (cookieMapList == null) {
-            return "-1";
-        }
-        QzoneUtil qzoneUtil = new QzoneUtil(cookieMapList);
-        if (redisManager.select(MZSTATEPRE + qq) == null) {
-            new Thread(() -> {
-                try {
-                    redisManager.update(MZSTATEPRE + qq, true);
-                    qzoneUtil.miaoZhan(MZSTATEPRE + qq, redisManager);
-                    mailService.sendSimpleMail(qq + "@qq.com", "秒赞登录超时提醒", "QQ:" + qq + ",秒赞服务已停止，" +
-                            "登录状态已失效");
-                } catch (Exception e) {
-                    redisManager.delete(COOKIEPRE + qq);
-                    redisManager.delete(MZSTATEPRE + qq);
-                    mailService.sendSimpleMail(qq + "@qq.com", "秒赞错误提醒", "QQ:" + qq + ",秒赞服务已停止，" +
-                            "发现未知错误");
-                    logToMail.error("秒赞报错,QQ:" + qq, e);
+    public void miaoZhan() {
+        new Thread(() -> {
+            List<String> qqList = (List<String>) redisManager.select(MZSLIST);
+            if (qqList == null || qqList.size() < 1) {
+                return;
+            }
+            while (true) {
+                Iterator<String> it = qqList.iterator();
+                while (it.hasNext()) {
+                    String qq = it.next();
+                    System.out.println("QQ:" + qq + ",开始");
+                    try {
+                        List<Cookie> cookieMapList = (List<Cookie>) redisManager.select(COOKIEPRE + qq);
+                        if (cookieMapList == null) {
+                            it.remove();
+                            mailService.sendSimpleMail(qq + "@qq.com", "秒赞登录超时提醒", "QQ:" + qq + ",秒赞服务已停止，" +
+                                    "登录状态已失效");
+                            continue;
+                        }
+                        QzoneUtil qzoneUtil = new QzoneUtil(cookieMapList);
+                        int result = qzoneUtil.miaoZhan();
+                        //登录失败或者未知错误
+                        if (result == -1 || result == -2) {
+                            redisManager.delete(COOKIEPRE + qq);
+                            it.remove();
+                            if (result == -1) {
+                                mailService.sendSimpleMail(qq + "@qq.com", "秒赞登录超时提醒", "QQ:" + qq + ",秒赞服务已停止，" +
+                                        "登录状态已失效");
+                            } else {
+                                mailService.sendSimpleMail(qq + "@qq.com", "秒赞错误提醒", "QQ:" + qq + ",秒赞服务已停止，" +
+                                        "发现未知错误");
+                            }
+                            redisManager.update(MZSLIST, qqList);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        logToMail.error("秒赞报错", e);
+                    }
+                    qqList = (List<String>) redisManager.select(MZSLIST);
                 }
-            }) {
-            }.start();
-        }
-        return "1";
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }) {
+        }.start();
     }
 }

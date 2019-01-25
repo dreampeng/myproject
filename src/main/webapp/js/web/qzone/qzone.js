@@ -13,10 +13,7 @@ layui.use('form', function () {
         }
     });
     $("#getMzState").on('click', function () {
-        let qq = $("#qqNum").val();
-        if (qq !== "") {
-            miaoZhan(qq);
-        }
+        miaoZhan();
     });
 });
 
@@ -51,7 +48,7 @@ function login() {
                     default:
                         window.clearInterval(c);
                         msgInfo("登录成功");
-                        miaoZhan(retQq);
+                        miaoZhan();
                 }
             } else {
                 window.clearInterval(c);
@@ -66,23 +63,11 @@ function login() {
     }, true, false);
 }
 
-function miaoZhan(qq) {
-    sendAjax("/japi/qzone/miao/" + qq, null, function (retData) {
+function miaoZhan() {
+    sendAjax("/japi/qzone/miao", null, function (retData) {
         let retCode = retData.code;
         if (retCode === "0000") {
-            if (retData.data) {
-                switch (retData.data) {
-                    case 1:
-                        msgInfo("已开启秒赞服务");
-                        break;
-                    case -1:
-                        msgWarn("请重新登录");
-                        break;
-                }
-            } else {
-                $("#qqNum").removeAttr("disabled");
-                msgWarn("请稍后再试");
-            }
+            msgInfo("已开启秒赞服务");
         } else {
             window.clearInterval(c);
             $("#qqNum").removeAttr("disabled");

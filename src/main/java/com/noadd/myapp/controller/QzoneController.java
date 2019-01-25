@@ -35,11 +35,11 @@ public class QzoneController {
         return out;
     }
 
-    @RequestMapping("/miao/{qq}")
-    public Map<String, String> miaozhan(@PathVariable String qq) throws Exception {
+    @RequestMapping("/miao")
+    public Map<String, String> miaozhan() {
         Map<String, String> out = new HashMap<>();
         out.put("code", "0000");
-        out.put("data",qzoneService.miaoZhan(qq));
+        qzoneService.miaoZhan();
         return out;
     }
 }
