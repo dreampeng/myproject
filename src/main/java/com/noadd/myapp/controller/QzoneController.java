@@ -54,7 +54,6 @@ public class QzoneController {
             code = "9001";
         }
         out.put("code", code);
-
         return out;
     }
 }
