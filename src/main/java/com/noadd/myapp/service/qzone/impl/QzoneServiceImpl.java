@@ -19,8 +19,8 @@ import java.util.List;
  **/
 @Service
 public class QzoneServiceImpl implements QzoneService {
-        private static String PATH = "/opt/www/qrcode/";
-//    private static String PATH = "E:/code/myproject/target/myapp-0.0.1-SNAPSHOT/qrcode/";
+    private static String PATH = "/opt/www/qrcode/";
+    //    private static String PATH = "E:/code/myproject/target/myapp-0.0.1-SNAPSHOT/qrcode/";
     private final RedisManager redisManager;
     private static String COOKIEPRE = "QZCOOKIE";
     private static String MZSLIST = "MZSLIST";
@@ -78,7 +78,7 @@ public class QzoneServiceImpl implements QzoneService {
         new Thread(() -> {
             List<String> qqList = (List<String>) redisManager.select(MZSLIST);
             if (qqList == null || qqList.size() < 1) {
-                return;
+                qqList = new ArrayList<>();
             }
             while (true) {
                 Iterator<String> it = qqList.iterator();
@@ -115,7 +115,7 @@ public class QzoneServiceImpl implements QzoneService {
                     qqList = (List<String>) redisManager.select(MZSLIST);
                 }
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
