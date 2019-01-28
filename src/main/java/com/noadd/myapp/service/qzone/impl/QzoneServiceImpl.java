@@ -1,5 +1,7 @@
 package com.noadd.myapp.service.qzone.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.noadd.myapp.mailservice.LogToMail;
 import com.noadd.myapp.mailservice.MyMailService;
 import com.noadd.myapp.redis.RedisManager;
@@ -77,7 +79,7 @@ public class QzoneServiceImpl implements QzoneService {
     public void miaoZhan() {
         new Thread(() -> {
             List<String> qqList = (List<String>) redisManager.select(MZSLIST);
-            if (qqList == null || qqList.size() < 1) {
+            if (qqList == null) {
                 qqList = new ArrayList<>();
             }
             while (true) {
@@ -122,5 +124,20 @@ public class QzoneServiceImpl implements QzoneService {
             }
         }) {
         }.start();
+    }
+
+    @Override
+    public JSONArray getMiaoZhan() {
+        List<String> qqList = (List<String>) redisManager.select(MZSLIST);
+        if (qqList == null) {
+            qqList = new ArrayList<>();
+        }
+        JSONArray result = new JSONArray();
+        for (String s : qqList) {
+            JSONObject temp = new JSONObject();
+            temp.put("QQ:", s);
+            result.add(temp);
+        }
+        return result;
     }
 }

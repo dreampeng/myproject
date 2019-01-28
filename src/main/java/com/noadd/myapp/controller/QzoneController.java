@@ -39,7 +39,7 @@ public class QzoneController {
     public Map<String, String> miaozhan() {
         Map<String, String> out = new HashMap<>();
         out.put("code", "0000");
-//        qzoneService.miaoZhan();
+        out.put("data", qzoneService.getMiaoZhan().toJSONString());
         return out;
     }
 }
