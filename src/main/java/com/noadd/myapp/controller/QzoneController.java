@@ -42,4 +42,19 @@ public class QzoneController {
         out.put("data", qzoneService.getMiaoZhan().toJSONString());
         return out;
     }
+
+    @RequestMapping("/start/miao/{psw}")
+    public Map<String, String> miaozhan(@PathVariable("psw") String psw) {
+        Map<String, String> out = new HashMap<>();
+        String code = "0000";
+        if (psw.equals("3321")) {
+            qzoneService.miaoZhan();
+            out.put("data", qzoneService.getMiaoZhan().toJSONString());
+        } else {
+            code = "9001";
+        }
+        out.put("code", code);
+
+        return out;
+    }
 }

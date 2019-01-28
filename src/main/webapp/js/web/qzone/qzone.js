@@ -20,6 +20,10 @@ layui.use('form', function () {
 function getQrPic(qq) {
     sendAjax("/japi/qzone/qrcode/" + qq, null, function (retData) {
         if (retData.code === "0000") {
+            if (retData.path === "-1") {
+                msgWarn("QQ:" + qq + ",已存在");
+                return;
+            }
             $("#qrShow").attr("src", "/qrcode/" + retData.path + ".png?_=" + (new Date()).getTime());
             c = setInterval(login, 3000);
         } else {
@@ -67,11 +71,11 @@ function miaoZhan() {
     sendAjax("/japi/qzone/miao", null, function (retData) {
         let retCode = retData.code;
         if (retCode === "0000") {
-            msgInfo("已开启秒赞服务");
+            msgInfo(retData.data)
         } else {
             window.clearInterval(c);
-            $("#qqNum").removeAttr("disabled");
             msgWarn(retData.msg);
         }
+        $("#qqNum").removeAttr("disabled");
     }, true, false);
 }

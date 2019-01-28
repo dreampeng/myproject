@@ -35,6 +35,10 @@ public class QzoneServiceImpl implements QzoneService {
 
     @Override
     public String getQrCode(String qq) throws Exception {
+        List<Cookie> cookieMapList = (List<Cookie>) redisManager.select(COOKIEPRE + qq);
+        if (cookieMapList != null) {
+            return "-1";
+        }
         QzoneUtil qzoneUtil = new QzoneUtil();
         //生成二维码
         qzoneUtil.ptqrshow(PATH + qq + ".png");
@@ -114,10 +118,10 @@ public class QzoneServiceImpl implements QzoneService {
                         e.printStackTrace();
                         logToMail.error("秒赞报错", e);
                     }
-                    qqList = (List<String>) redisManager.select(MZSLIST);
                 }
+                qqList = (List<String>) redisManager.select(MZSLIST);
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(200);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
