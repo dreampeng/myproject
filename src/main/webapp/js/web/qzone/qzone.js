@@ -52,6 +52,7 @@ function login() {
                     default:
                         window.clearInterval(c);
                         msgInfo("登录成功");
+                        $("#qqNum").removeAttr("disabled");
                         miaoZhan();
                 }
             } else {
