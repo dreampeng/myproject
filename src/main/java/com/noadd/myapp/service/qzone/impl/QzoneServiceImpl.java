@@ -110,11 +110,11 @@ public class QzoneServiceImpl implements QzoneService {
                     }
                 }
                 try {
-                    if (qqList.size() < 3) {
-                        Thread.sleep(3000);
-                    } else if (qqList.size() < 5) {
+                    if (qqList.size() < 6) {
+                        Thread.sleep(2500);
+                    } else if (qqList.size() < 11) {
                         Thread.sleep(1000);
-                    } else if (qqList.size() < 8) {
+                    } else if (qqList.size() < 15) {
                         Thread.sleep(200);
                     }
                 } catch (InterruptedException e) {
