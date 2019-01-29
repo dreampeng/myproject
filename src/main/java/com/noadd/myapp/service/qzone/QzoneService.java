@@ -10,4 +10,6 @@ public interface QzoneService {
     void miaoZhan();
 
     JSONArray getMiaoZhan();
+
+    void addMiaoZhan();
 }

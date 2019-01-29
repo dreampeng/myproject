@@ -576,17 +576,6 @@ public class QzoneUtil {
         } else {
             url += "internal_unlike_app";
         }
-        String type;
-        switch (appid) {
-            case "4":
-                type = "batchphoto";
-                break;
-            case "311":
-                type = "mood";
-                break;
-            default:
-                type = "mood";
-        }
         Map<String, String> param = new HashMap<>();
         param.put("qzonetoken", (String) cookieMap.get("qzonetoken"));
         param.put("g_tk", getG_tk());
@@ -654,6 +643,9 @@ public class QzoneUtil {
                 }
             }
             System.out.println("获取到：" + datas.size() + " 新：" + result.size());
+        }
+        if (-10001 == (int) object.get("code")) {
+            result = new ArrayList();
         } else {
             System.out.println(object.toJSONString());
             return null;

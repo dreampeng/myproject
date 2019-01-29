@@ -3,6 +3,10 @@ package com.noadd.myapp.redis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -39,6 +43,18 @@ public class RedisManagerImpl implements RedisManager {
         if (redisTemplate.hasKey(key)) {
             redisTemplate.delete(key);
         }
+    }
+
+    @Override
+    public List<Object> selects(String key) {
+        Set<String> keys = redisTemplate.keys(key);
+        List<Object> result = new ArrayList<>();
+        if (keys != null) {
+            for (String s : keys) {
+                result.add(select(s));
+            }
+        }
+        return result;
     }
 
 

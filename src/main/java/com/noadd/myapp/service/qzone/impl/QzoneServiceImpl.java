@@ -26,6 +26,7 @@ public class QzoneServiceImpl implements QzoneService {
     private final RedisManager redisManager;
     private static String COOKIEPRE = "QZCOOKIE";
     private static String MZSLIST = "MZSLIST";
+    private static String MZWAIT = "MZWAIT";
 
     @Autowired
     public QzoneServiceImpl(RedisManager redisManager) {
@@ -35,8 +36,8 @@ public class QzoneServiceImpl implements QzoneService {
 
     @Override
     public String getQrCode(String qq) throws Exception {
-        List<Cookie> cookieMapList = (List<Cookie>) redisManager.select(COOKIEPRE + qq);
-        if (cookieMapList != null) {
+        List<String> qqList = (List<String>) redisManager.select(MZSLIST);
+        if (qqList.contains(qq)) {
             return "-1";
         }
         QzoneUtil qzoneUtil = new QzoneUtil();
@@ -61,15 +62,8 @@ public class QzoneServiceImpl implements QzoneService {
         qq = qzoneUtil.loginOnce(PATH + qq + ".png");
         redisManager.delete(COOKIEPRE + qq);
         if (!"0".equals(qq)) {
-            List<String> qqList = (List<String>) redisManager.select(MZSLIST);
-            if (qqList == null) {
-                qqList = new ArrayList<>();
-            }
-            if (!qqList.contains(qq)) {
-                qqList.add(qq);
-                redisManager.update(MZSLIST, qqList);
-            }
             saveCookie(qq, qzoneUtil);
+            redisManager.update(MZWAIT + qq, qq);
         }
         return qq;
     }
@@ -82,11 +76,11 @@ public class QzoneServiceImpl implements QzoneService {
     @Override
     public void miaoZhan() {
         new Thread(() -> {
-            List<String> qqList = (List<String>) redisManager.select(MZSLIST);
-            if (qqList == null) {
-                qqList = new ArrayList<>();
-            }
             while (true) {
+                List<String> qqList = (List<String>) redisManager.select(MZSLIST);
+                if (qqList == null) {
+                    qqList = new ArrayList<>();
+                }
                 Iterator<String> it = qqList.iterator();
                 while (it.hasNext()) {
                     String qq = it.next();
@@ -94,9 +88,6 @@ public class QzoneServiceImpl implements QzoneService {
                     try {
                         List<Cookie> cookieMapList = (List<Cookie>) redisManager.select(COOKIEPRE + qq);
                         if (cookieMapList == null) {
-                            it.remove();
-                            mailService.sendSimpleMail(qq + "@qq.com", "秒赞登录超时提醒", "QQ:" + qq + ",秒赞服务已停止，" +
-                                    "登录状态已失效");
                             continue;
                         }
                         QzoneUtil qzoneUtil = new QzoneUtil(cookieMapList);
@@ -112,16 +103,20 @@ public class QzoneServiceImpl implements QzoneService {
                                 mailService.sendSimpleMail(qq + "@qq.com", "秒赞错误提醒", "QQ:" + qq + ",秒赞服务已停止，" +
                                         "发现未知错误");
                             }
-                            redisManager.update(MZSLIST, qqList);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                         logToMail.error("秒赞报错", e);
                     }
                 }
-                qqList = (List<String>) redisManager.select(MZSLIST);
                 try {
-                    Thread.sleep(200);
+                    if (qqList.size() < 3) {
+                        Thread.sleep(3000);
+                    } else if (qqList.size() < 5) {
+                        Thread.sleep(1000);
+                    } else if (qqList.size() < 8) {
+                        Thread.sleep(200);
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -143,5 +138,37 @@ public class QzoneServiceImpl implements QzoneService {
             result.add(temp);
         }
         return result;
+    }
+
+    @Override
+    public void addMiaoZhan() {
+        new Thread(() -> {
+            while (true) {
+                List<String> qqList = (List<String>) redisManager.select(MZSLIST);
+                if (qqList == null) {
+                    qqList = new ArrayList<>();
+                }
+                List<Object> waits = redisManager.selects(MZWAIT + "*");
+                for (Object wait : waits) {
+                    String qq = (String) wait;
+                    qqList.add(qq);
+                    System.out.println("新增QQ:" + qq);
+                    redisManager.delete(MZWAIT + qq);
+                }
+                Iterator it = qqList.iterator();
+                while (it.hasNext()) {
+                    List<Cookie> cookieMapList = (List<Cookie>) redisManager.select(COOKIEPRE + it.next());
+                    if (cookieMapList == null) {
+                        it.remove();
+                    }
+                }
+                redisManager.update(MZSLIST, qqList);
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 }
