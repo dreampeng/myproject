@@ -56,4 +56,23 @@ public class QzoneController {
         out.put("code", code);
         return out;
     }
+
+    @RequestMapping("/start/del/{qq}")
+    public Map<String, String> delMz(@PathVariable("qq") String qq) {
+        Map<String, String> out = new HashMap<>();
+        String code = "0000";
+        qzoneService.delMz(qq);
+        out.put("data", "已删除");
+        return out;
+    }
+
+    @RequestMapping("/start/zhan/{qq}")
+    public Map<String, String> zhan(@PathVariable("qq") String qq) {
+        Map<String, String> out = new HashMap<>();
+        String code = "0000";
+        qzoneService.addZhan(qq);
+        out.put("data", "已开启，完成后会收到邮件一封");
+        out.put("code", code);
+        return out;
+    }
 }

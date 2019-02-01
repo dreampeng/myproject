@@ -163,16 +163,20 @@ public class QzoneUtil {
     /**
      * 获取当前用户说有说说
      *
-     * @return 结果
-     * @throws Exception error
+     * @param qq qq
+     * @return
+     * @throws Exception
      */
-    public JSONObject getAllSs() throws Exception {
+    public JSONObject getAllSs(String qq, int maxPage) throws Exception {
         Map<String, Object> cookieMap = getCookieMap();
         JSONObject ss = new JSONObject();
         int limit = 20, total, page = 1;
         while (true) {
             try {
-                getOnePageSs(page, limit, (String) getCookieMap().get("qq_num"), ss);
+                if (StringUtil.isEmpty(qq)) {
+                    qq = (String) getCookieMap().get("qq_num");
+                }
+                getOnePageSs(page, limit, qq, ss);
                 if ("-3000".equals(ss.getString("code"))) {
                     System.out.println("QQ号:" + cookieMap.get("qq_num") + "登录失败");
                     break;
@@ -183,7 +187,7 @@ public class QzoneUtil {
                 break;
             }
             System.out.println("已取到" + page++ + "页，共" + ss.getJSONArray("msgList").size() + "条，总共" + total + "条");
-            if ((page * limit) > total) {
+            if ((page * limit) > total || maxPage >= page) {
                 break;
             }
         }
@@ -608,7 +612,6 @@ public class QzoneUtil {
 //        param.put("begintime","1");
         JSONObject object = JSONObject.parseObject(HttpUtil.doGet(url, param, null, context));
         List<Map<String, String>> result = new ArrayList<>();
-        System.out.println("code:" + object.get("code"));
         if (0 == (int) object.get("code")) {
             JSONArray datas = (JSONArray) ((Map<String, Object>) object.get("data")).get("data");
             for (Object dataTemp : datas) {
@@ -642,7 +645,6 @@ public class QzoneUtil {
                     e.printStackTrace();
                 }
             }
-            System.out.println("获取到：" + datas.size() + " 新：" + result.size());
         } else if (-10001 == (int) object.get("code")) {
             result = new ArrayList();
         } else {
@@ -675,6 +677,7 @@ public class QzoneUtil {
             likes(newSs);
             return 0;
         } catch (Exception e) {
+            System.out.println(e);
             return -2;
         }
     }

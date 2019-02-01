@@ -12,4 +12,10 @@ public interface QzoneService {
     JSONArray getMiaoZhan();
 
     void addMiaoZhan();
+
+    void delMz(String qq);
+
+    void addZhan(String qq);
+
+    void zdZhan();
 }
