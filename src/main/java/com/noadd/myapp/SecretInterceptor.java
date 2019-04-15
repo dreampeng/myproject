@@ -12,8 +12,12 @@ import javax.servlet.http.HttpSession;
 @Component
 public class SecretInterceptor implements HandlerInterceptor {
 
+    private HttpSession session;
+
     @Autowired
-    HttpSession session;
+    public SecretInterceptor(HttpSession session) {
+        this.session = session;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -37,6 +41,6 @@ public class SecretInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
     }
 }

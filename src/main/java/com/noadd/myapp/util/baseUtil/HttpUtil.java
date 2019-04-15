@@ -1,24 +1,28 @@
 package com.noadd.myapp.util.baseUtil;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.http.Header;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import java.io.*;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -56,23 +60,23 @@ public class HttpUtil {
             }
             // 执行请求
             response = httpclient.execute(httpGet, context);
-            // 判断返回状态是否为200
-            if (response.getStatusLine().getStatusCode() == 200) {
-                resultString = EntityUtils.toString(response.getEntity(), "UTF-8");
-            } else {
-                throw new Exception("请求报错");
+            if (response.getStatusLine().getStatusCode() == 202) {
+                CookieStore cookieStore = context.getCookieStore();
+                for (Header header : response.getHeaders("Set-Cookie")) {
+                    BasicClientCookie newCookie = new BasicClientCookie(header.getElements()[0].getName(), header.getElements()[0].getValue());
+                    newCookie.setDomain(new URL(url).getHost());
+//                        newCookie.setExpiryDate(cookieTemp.getExpiryDate());
+                    newCookie.setPath(String.valueOf(header.getElements()[0].getParameterByName("path")));
+                    cookieStore.addCookie(newCookie);
+                }
+                context.setCookieStore(cookieStore);
             }
+            resultString = EntityUtils.toString(response.getEntity(), "UTF-8");
         } catch (Exception e) {
             throw e;
         } finally {
-            try {
-                if (response != null) {
-                    response.close();
-                }
-                httpclient.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            response.close();
+            httpclient.close();
         }
         return resultString;
     }
@@ -112,11 +116,10 @@ public class HttpUtil {
             }
         } finally {
             try {
-                if (response != null) {
-                    response.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+                response.close();
+                httpclient.close();
+            } catch (Exception e) {
+
             }
         }
         return result;

@@ -23,10 +23,14 @@ import java.util.Map;
 @Aspect
 @Component
 public class MyAspect {
-    @Autowired
     private LogToMail logToMail;
+    private HttpServletRequest request;
+
     @Autowired
-    HttpServletRequest request;
+    public MyAspect(LogToMail logToMail, HttpServletRequest request) {
+        this.logToMail = logToMail;
+        this.request = request;
+    }
 
     //所有的contoller的返回参数必须是Map<String,String>
     @Pointcut("execution(public * com.noadd.myapp.controller..*Controller.*(..))")
@@ -56,25 +60,25 @@ public class MyAspect {
             returnValue = joinPoint.proceed(objects);
             retMap = (Map<String, String>) returnValue;
         } catch (Throwable throwable) {
-            if (throwable instanceof MailAuthenticationException){
+            if (throwable instanceof MailAuthenticationException) {
                 retMap = new HashMap<>();
                 retMap.put("code", "9800");
-            }else {
+            } else {
                 Signature s = joinPoint.getSignature();
                 MethodSignature ms = (MethodSignature) s;
                 Method m = ms.getMethod();
                 Parameter[] parameters = m.getParameters();
-                String methodParam = "";
-                String paramValue = "";
+                StringBuilder methodParam = new StringBuilder();
+                StringBuilder paramValue = new StringBuilder();
                 for (Parameter temp : parameters) {
-                    methodParam += ", " + temp.getType().getSimpleName() + " " + temp.getName();
+                    methodParam.append(", ").append(temp.getType().getSimpleName()).append(" ").append(temp.getName());
                 }
                 for (Object str : objects) {
-                    paramValue += ", " + str;
+                    paramValue.append(", ").append(str);
                 }
                 logToMail.error("方法名:" + m.getName() +
-                        "\n方法参数(" + ("".equals(methodParam) ? "" : methodParam.substring(2)) + ")," +
-                        "\n传入参数(" + ("".equals(paramValue) ? "" : paramValue.substring(2)) + ")", throwable);
+                        "\n方法参数(" + ("".equals(methodParam.toString()) ? "" : methodParam.substring(2)) + ")," +
+                        "\n传入参数(" + ("".equals(paramValue.toString()) ? "" : paramValue.substring(2)) + ")", throwable);
             }
         }
         if (retMap == null) {

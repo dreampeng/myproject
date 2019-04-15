@@ -20,7 +20,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         //----------------前台拦截----------------
         //白名单
-        List<String> excldePath = new ArrayList();
+        List<String> excldePath = new ArrayList<>();
         //测试
         excldePath.add("/japi/test/**");
         //空间相关
@@ -40,14 +40,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
         //过滤所有静态文件
         excldePath.add("/**/*.*");
         //黑名单
-        List<String> addPath = new ArrayList();
+        List<String> addPath = new ArrayList<>();
         registry.addInterceptor(interceptor)
                 .excludePathPatterns(excldePath)
                 .addPathPatterns(addPath);
 
         //----------------私密拦截----------------
         //白名单
-        List<String> secretExcldePath = new ArrayList();
+        List<String> secretExcldePath = new ArrayList<>();
         //错误界面
         secretExcldePath.add("/japi/error");
         //跳转到登陆页面
@@ -55,7 +55,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         //过滤所有静态文件
         excldePath.add("/**/*.*");
         //黑名单
-        List<String> secretAddPath = new ArrayList();
+        List<String> secretAddPath = new ArrayList<>();
         secretAddPath.add("/japi/secret/**/*");
         secretAddPath.add("/japi/secret/**/*.html");
         registry.addInterceptor(secretInterceptor)
