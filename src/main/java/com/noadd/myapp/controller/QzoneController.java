@@ -62,6 +62,7 @@ public class QzoneController {
         Map<String, String> out = new HashMap<>();
         String code = "0000";
         qzoneService.delMz(qq);
+        out.put("code", code);
         out.put("data", "已删除");
         return out;
     }

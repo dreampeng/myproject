@@ -14,8 +14,12 @@ import java.util.concurrent.TimeUnit;
  **/
 @Service
 public class RedisManagerImpl implements RedisManager {
+    private final RedisTemplate<String, Object> redisTemplate;
+
     @Autowired
-    RedisTemplate<String, Object> redisTemplate;
+    public RedisManagerImpl(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     @Override
     public void update(String key, Object value) {
@@ -49,10 +53,8 @@ public class RedisManagerImpl implements RedisManager {
     public List<Object> selects(String key) {
         Set<String> keys = redisTemplate.keys(key);
         List<Object> result = new ArrayList<>();
-        if (keys != null) {
-            for (String s : keys) {
-                result.add(select(s));
-            }
+        for (String s : keys) {
+            result.add(select(s));
         }
         return result;
     }

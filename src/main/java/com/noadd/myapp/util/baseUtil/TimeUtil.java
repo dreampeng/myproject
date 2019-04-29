@@ -1,7 +1,5 @@
 package com.noadd.myapp.util.baseUtil;
 
-import com.noadd.myapp.util.baseUtil.StringUtil;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;

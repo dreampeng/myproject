@@ -31,7 +31,7 @@ public class MyMailService {
         MimeMessage message = mailSender.createMimeMessage();
 
         //true表示需要创建一个multipart message
-        MimeMessageHelper helper = null;
+        MimeMessageHelper helper;
         try {
             helper = new MimeMessageHelper(message, true);
             helper.setFrom(from);

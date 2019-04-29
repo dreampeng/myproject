@@ -76,9 +76,11 @@ public class MyAspect {
                 for (Object str : objects) {
                     paramValue.append(", ").append(str);
                 }
-                logToMail.error("方法名:" + m.getName() +
-                        "\n方法参数(" + ("".equals(methodParam.toString()) ? "" : methodParam.substring(2)) + ")," +
-                        "\n传入参数(" + ("".equals(paramValue.toString()) ? "" : paramValue.substring(2)) + ")", throwable);
+                String content = "报错信息\n\t方法名:" + m.getName()
+                        + "\n\t方法参数(" + ("".equals(methodParam.toString()) ? "" : methodParam.substring(2))
+                        + "),\n\t传入参数(" + ("".equals(paramValue.toString()) ? "" : paramValue.substring(2))
+                        + ")";
+                logToMail.error(content, throwable);
             }
         }
         if (retMap == null) {
