@@ -1,6 +1,19 @@
 package com.noadd.myapp.util.baseUtil;
 
+import com.alibaba.fastjson.JSONObject;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.cookie.BasicClientCookie;
+
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 文件处理工具
@@ -157,5 +170,125 @@ public class FileUtil {
                 }
             }
         }
+    }
+
+
+    /**
+     * 按行读文件
+     *
+     * @param filePath 文件地址
+     * @return 返回值
+     */
+    public static List<String> readFileByLine(String filePath) {
+        List<String> arrayList = new ArrayList<>();
+        try {
+            File file = new File(filePath);
+            InputStreamReader inputReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
+            BufferedReader bf = new BufferedReader(inputReader);
+            // 按行读取字符串
+            String str;
+            while ((str = bf.readLine()) != null) {
+                arrayList.add(str);
+            }
+            bf.close();
+            inputReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return arrayList;
+    }
+
+    //        header.put("Accept-Encoding","gzip, deflate");
+//        header.put("Accept-Language","zh-CN,zh;q=0.9");
+//        header.put("Connection","keep-alive");
+//        header.put("Upgrade-Insecure-Requests","1");
+    public static void main(String[] args) {
+        String qq = "961064193";
+        HttpClientContext context = HttpClientContext.create();
+        Map<String, String> header = new HashMap<>();
+        header.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
+        header.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36");
+        String filePath ="C:\\Users\\Administrator\\Desktop\\地址.txt";
+        List<String> iPath = readFileByLine(filePath);
+        iPath.forEach(str->{
+            String hashSaltStr;
+            String url = str.substring(0,str.indexOf(" "));
+            String tid = str.substring(str.indexOf(" ")+1);
+            try {
+                hashSaltStr = HttpUtil.doGet(url, null, header, context);
+                int from;
+                int to;
+                   if(!hashSaltStr.contains("var hashsalt")) {
+                       from = hashSaltStr.indexOf("setCookie('sec_defend',") + 23;
+                       to = hashSaltStr.indexOf(");", from);
+                       String sec_defend = getHashSalt("=" + hashSaltStr.substring(from, to));
+                       if(sec_defend==null){
+                           System.out.println(url+" " + tid);
+                       }
+                       setCookie(context, "sec_defend", sec_defend);
+                       setCookie(context, "sec_defend_time", "1");
+                       hashSaltStr = HttpUtil.doGet(url, null, header, context);
+                   }
+                from = hashSaltStr.indexOf("var hashsalt") + 12;
+                to = hashSaltStr.indexOf(";", from);
+                hashSaltStr = hashSaltStr.substring(from, to);
+                hashSaltStr = getHashSalt(hashSaltStr);
+                if(hashSaltStr==null){
+                    System.out.println(url+" " + tid);
+                }else {
+                    Map<String, String> data = new HashMap<>();
+                    data.put("inputvalue", qq);
+                    data.put("inputvalue1", qq);
+                    data.put("inputvalue2", qq);
+                    data.put("tid", tid);
+                    data.put("hashsalt", hashSaltStr);
+                    data.put("num", "1");
+                    String result = HttpUtil.doPost(url + "/ajax.php?act=pay", null, data, header, context);
+                    JSONObject jsonObject = JSONObject.parseObject(result);
+                    if(0!=jsonObject.getInteger("code")){
+                        System.out.println(url+" " + tid + "----"  + jsonObject.getString("msg"));
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("失败的地址：" + url);
+            }
+        });
+
+
+
+//        urls.forEach(System.out::println);
+
+
+    }
+
+    public static void setCookie(HttpClientContext context, String name, String value) {
+        CookieStore cookieStore = context.getCookieStore();
+        if (cookieStore == null || cookieStore.getCookies() == null || cookieStore.getCookies().size() == 0) {
+            return;
+        }
+        Cookie cookieTemp = context.getCookieStore().getCookies().get(0);
+        BasicClientCookie newCookie = new BasicClientCookie(name, value);
+        newCookie.setDomain(cookieTemp.getDomain());
+        newCookie.setExpiryDate(cookieTemp.getExpiryDate());
+        newCookie.setPath(cookieTemp.getPath());
+        cookieStore.addCookie(newCookie);
+    }
+
+    public static String getHashSalt(String hashSaltStr) {
+        ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+        ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("javascript");
+        try {
+            scriptEngine.eval("function getHashSalt() {\n" +
+                    "    var hashsalt  " + hashSaltStr + ";\n" +
+                    "    return hashsalt;\n" +
+                    "}\n");
+            if (scriptEngine instanceof Invocable) {
+                Invocable in = (Invocable) scriptEngine;
+                return in.invokeFunction("getHashSalt").toString();
+            }
+        } catch (Exception ignored) {
+
+        }
+        return null;
     }
 }

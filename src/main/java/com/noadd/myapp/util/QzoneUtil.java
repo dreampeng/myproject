@@ -2,7 +2,6 @@ package com.noadd.myapp.util;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.noadd.myapp.redis.RedisManager;
 import com.noadd.myapp.util.baseUtil.FileUtil;
 import com.noadd.myapp.util.baseUtil.HttpUtil;
 import com.noadd.myapp.util.baseUtil.StringUtil;
@@ -12,6 +11,7 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class QzoneUtil {
     public QzoneUtil() {
@@ -295,6 +295,67 @@ public class QzoneUtil {
         }
         return Long.toString(hash & 0x7fffffff);
     }
+
+    public static void main(String[] args) {
+        List<String> qqnums = new ArrayList<>();
+        qqnums.add("291244026");
+        qqnums.add("910615337");
+        qqnums.add("3392407634");
+        qqnums.add("2267776418");
+        qqnums.add("1463207647");
+        qqnums.add("2368291085");
+        qqnums.add("1098108453");
+        qqnums.add("2945059297");
+        qqnums.add("2955683837");
+        qqnums.add("2308628595");
+        qqnums.add("2147659148");
+        qqnums.add("2684726505");
+        qqnums.add("2960518197");
+        qqnums.add("2048787831");
+        while (true) {
+            freeGift(qqnums);
+        }
+    }
+
+    public static void freeGift(List<String> qqnums) {
+        AtomicReference<JSONObject> retJson = new AtomicReference<>(new JSONObject());
+        String publishUrl = "https://h5.qzone.qq.com/" +
+                "proxy/domain/campaign.qzone.qq.com/" +
+                "fcg-bin/v2/fcg_send_qq_msg_and_send_free_gift" +
+                "?g_tk=1418751766&r=0.6254867021952432";
+        String g_tk = "1418751766";
+        Map<String, String> param = new HashMap<>();
+        param.put("r", "0.6254867021952432");
+        param.put("g_tk", g_tk);
+        Map<String, String> hearder = new HashMap<>();
+        hearder.put("Content-Type", "application/x-www-form-urlencoded");
+        hearder.put("Cookie", "_qpsvr_localtk=0.13376528601665671; pgv_pvi=1932525568; pgv_si=s6118779904; uin=o0815566704; skey=@PwQLoI1Mp; ptisp=ctc; RK=RHDssv/oZ4; ptcz=7ab71e4638f5c4665ec0040fd4f14aab926e6ebc655f09b660c402b7f64674ee; p_uin=o0815566704; Loading=Yes; welcomeflash=815566704_80548; qz_screen=1366x768; qqmusic_uin=0815566704; qqmusic_key=@PwQLoI1Mp; qqmusic_fromtag=6; pgv_pvid=902080752; pgv_info=ssid=s8694755365; 815566704_todaycount=0; 815566704_totalcount=16552; QZ_FE_WEBP_SUPPORT=1; pt4_token=7cwLiLTMU38zmJQD3ffRAwSBRPB03rUoXvKBddNsTlw_; p_skey=DtED-tYpx56kS9O4*9rYbzSwU7lrQ*NQqKYY1Wa4ZLA_; cpu_performance_v8=36; __Q_w_s__QZN_TodoMsgCnt=1; qzmusicplayer=qzone_player_815566704_1557197820291");
+        Map<String, String> formDate = new HashMap<>();
+        formDate.put("title", "太空狂欢嘉年华");
+        formDate.put("summary", "庆祝QQ20周年++免费抢80元礼包");
+        formDate.put("uin", "o0815566704");
+        formDate.put("link", "https://act.qzone.qq.com/vip/2019/vip-20th?_wv=16778243&qzUseTransparentNavBar=1&_wwv=1&_sr_20=1");
+        formDate.put("image_url", "https://qzonestyle.gtimg.cn/aoi/sola/20190424161728_XB5E5drf48.png");
+        formDate.put("business", "0");
+        formDate.put("format", "json");
+        qqnums.forEach(str -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            formDate.put("dest_uin", str);
+            String result = HttpUtil.doPost(publishUrl, param, formDate, hearder, null);
+            retJson.set(JSONObject.parseObject(result));
+            if (retJson.get().getJSONObject("data") != null
+                    && 1 == retJson.get().getJSONObject("data").getInteger("state")) {
+                return;
+            }
+            System.out.println(retJson.get() + str);
+
+        });
+    }
+
 
     /**
      * 添加cookie
