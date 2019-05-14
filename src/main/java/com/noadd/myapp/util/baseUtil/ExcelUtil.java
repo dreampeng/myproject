@@ -80,11 +80,4 @@ public class ExcelUtil {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        System.out.println(TimeUtil.getCurrentDate(null));
-        System.out.println(readExcel("E:\\清税信息\\6.xlsx", 1, 1, 1,
-                "uniscid,nsrsbh,wszg,nsrmc,kjswjg,kjrq,djxh,ssdabh").size());
-        System.out.println(TimeUtil.getCurrentDate(null));
-    }
-
 }

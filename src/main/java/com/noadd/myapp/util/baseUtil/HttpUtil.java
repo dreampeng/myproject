@@ -5,6 +5,7 @@ import com.noadd.myapp.util.ProxyUtils;
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -33,21 +34,21 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class HttpUtil {
 
-//    private static RequestConfig reqConf = null;
+    private static RequestConfig reqConf = null;
 //    private static StandardHttpRequestRetryHandler standardHandler = null;
-//
-//    static {
+
+    static {
 //        HttpHost proxy=new HttpHost("68.183.99.96", 8080);
-//        reqConf = RequestConfig.custom()
-//                .setSocketTimeout(5000)
-//                .setConnectTimeout(5000)
-//                .setConnectionRequestTimeout(2000)
+        reqConf = RequestConfig.custom()
+                .setSocketTimeout(20000)
+                .setConnectTimeout(20000)
+                .setConnectionRequestTimeout(20000)
 //                .setRedirectsEnabled(false)
 //                .setMaxRedirects(0)
 //                .setProxy(proxy)
-//                .build();
+                .build();
 //        standardHandler = new StandardHttpRequestRetryHandler(3, true);
-//    }
+    }
 
 
     private static HttpClientContext getDeafultHttpClientContext() {
@@ -88,7 +89,7 @@ public class HttpUtil {
                     httpGet.setHeader(key, hearder.get(key));
                 }
             }
-//            httpGet.setConfig(reqConf);
+            httpGet.setConfig(reqConf);
             // 执行请求
             response = httpclient.execute(httpGet, context);
             if (response.getStatusLine().getStatusCode() == 202) {
@@ -132,7 +133,7 @@ public class HttpUtil {
 
             // 创建http GET请求
             HttpGet httpGet = new HttpGet(uri);
-
+            httpGet.setConfig(reqConf);
             // 执行请求
             response = httpclient.execute(httpGet, context);
             String resultString = EntityUtils.toString(response.getEntity(), "utf-8");
@@ -169,6 +170,7 @@ public class HttpUtil {
         try {
             // 创建Http Post请求
             HttpPost httpPost = new HttpPost(url);
+            httpPost.setConfig(reqConf);
             httpPost.setEntity(new StringEntity(json, ContentType.APPLICATION_JSON));
             // 执行http请求
             response = httpClient.execute(httpPost, context);
@@ -212,6 +214,7 @@ public class HttpUtil {
             }
             // 创建Http Post请求
             HttpPost httpPost = new HttpPost(url);
+            httpPost.setConfig(reqConf);
             // 创建参数列表
             if (fromData != null) {
                 List<NameValuePair> paramList = new ArrayList<>();
@@ -227,7 +230,6 @@ public class HttpUtil {
                     httpPost.setHeader(key, header.get(key));
                 }
             }
-//            httpPost.setConfig(reqConf);
             response = httpClient.execute(httpPost, context);
             resultString = EntityUtils.toString(response.getEntity(), "utf-8");
         } catch (Exception e) {
@@ -265,6 +267,7 @@ public class HttpUtil {
 
             // 创建http GET请求
             HttpGet httpGet = new HttpGet(uri);
+            httpGet.setConfig(reqConf);
             if (hearder != null) {
                 for (String key : hearder.keySet()) {
                     httpGet.setHeader(key, hearder.get(key));
@@ -299,45 +302,6 @@ public class HttpUtil {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    public static void main(String[] args) throws Exception {
-//        120.234.63.196", 3128
-        getProxy();
-    }
-    public static void getProxy() throws Exception {
-        while (true) {
-            HttpClientContext context = HttpClientContext.create();
-            Map<String, String> header = new HashMap<>();
-            header.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
-            header.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36");
-            String htmls = HttpUtil.doGet("http://www.data5u.com/free/index.html", null, header, context);
-            Document doc = Jsoup.parseBodyFragment(htmls);
-
-            Elements elements = doc.body().getElementsByClass("l2");
-            elements.forEach(ele -> {
-                Elements lis = ele.getElementsByTag("li");
-                String ip = lis.get(0).text();
-                int port =Integer.parseInt(lis.get(1).text());
-//                String proxyType = lis.get(3).text();
-                for (int i = 0; i < 10; i++) {
-                    Thread thread = new Thread(() -> {
-                        if (ProxyUtils.validateHttp(ip, port)){
-                            System.out.println(ip + " " + port + " http");
-                        }
-                        if (ProxyUtils.validateHttps(ip, port)){
-                            System.out.println(ip + " " + port + " https");
-                        }
-                    });
-                    thread.start();
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
         }
     }
 }

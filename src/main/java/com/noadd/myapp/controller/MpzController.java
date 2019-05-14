@@ -14,10 +14,12 @@ import java.util.concurrent.Executors;
 @RestController
 @RequestMapping("/japi/mpz")
 public class MpzController {
-    public static MyQueen mpzQueen = new MyQueen();
-    private static ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private static MyQueen mpzQueen = new MyQueen(0, 99);
+    private static ExecutorService fixedExecutorService;
+    private static ExecutorService singleExecutorService;
+    private static boolean state = false;
 
-    @RequestMapping("/{qq}")
+    @RequestMapping("/add/{qq}")
     public Map<String, String> mpz(@PathVariable String qq) {
         Map<String, String> out = new HashMap<>();
         mpzQueen.put(qq);
@@ -25,8 +27,58 @@ public class MpzController {
         return out;
     }
 
-    public void test() {
-        executorService.submit(new ThreadTemp((String) mpzQueen.get()));
+    @RequestMapping("/start/{psw}")
+    public Map<String, String> start(@PathVariable String psw) {
+        Map<String, String> out = new HashMap<>();
+        String code = "9999";
+        if ("815566704".equals(psw) && !state) {
+            fixedExecutorService = Executors.newFixedThreadPool(10);
+            singleExecutorService = Executors.newSingleThreadExecutor();
+            singleExecutorService.execute(() -> {
+                for (int i = 0; i < 10; i++) {
+                    fixedExecutorService.submit(new ThreadTemp((String) mpzQueen.get()));
+                }
+                fixedExecutorService.shutdown();
+                while (true) {
+                    if (fixedExecutorService.isTerminated()) {
+                        fixedExecutorService = Executors.newFixedThreadPool(10);
+                        for (int i = 0; i < 10; i++) {
+                            fixedExecutorService.submit(new ThreadTemp((String) mpzQueen.get()));
+                        }
+                        fixedExecutorService.shutdown();
+                    }
+                }
+
+            });
+            code = "0000";
+            state = true;
+        }
+        out.put("code", code);
+        return out;
     }
+
+    @RequestMapping("/close/{psw}")
+    public Map<String, String> close(@PathVariable String psw) {
+        Map<String, String> out = new HashMap<>();
+        String code = "9999";
+        if ("815566704".equals(psw) && state) {
+            singleExecutorService.shutdownNow();
+            fixedExecutorService.shutdownNow();
+            code = "0000";
+            state = false;
+        }
+        out.put("code", code);
+        return out;
+    }
+
+    @RequestMapping("/get")
+    public Map<String, String> getAll() {
+        Map<String, String> out = new HashMap<>();
+        String code = "0000";
+        out.put("data", mpzQueen.getAllStr());
+        out.put("code", code);
+        return out;
+    }
+
 
 }

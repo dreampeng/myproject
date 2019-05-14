@@ -10,13 +10,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MyQueen {
 
 
-    private final LinkedList<Object> list = new LinkedList<>();
     private final AtomicInteger conn = new AtomicInteger(0);
-    private static final int minSize = 0;
-    private static final int maxSize = 99;
+    private final LinkedList<Object> list = new LinkedList<>();
+    private int minSize;
+    private int maxSize;
     private final Object lock = new Object();
 
-    public int put(String obj) {
+    public MyQueen(int minSize, int maxSize) {
+        this.minSize = minSize;
+        this.maxSize = maxSize;
+    }
+
+    public int put(Object obj) {
         synchronized (lock) {
             if (conn.get() == maxSize) {
                 return 0;
@@ -45,4 +50,7 @@ public class MyQueen {
         }
     }
 
+    public String getAllStr() {
+        return list.toString();
+    }
 }

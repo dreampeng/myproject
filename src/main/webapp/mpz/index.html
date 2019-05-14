@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Praise Info</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" href="/css/layout/layout.css">
+    <script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/layui/layui.js"></script>
+    <script type="text/javascript" src="/js/web/mpz/mpz.js"></script>
+</head>
+<body>
+<div class="top-nav layui-bg-black">
+    <div class="layui-main layui-row">
+        <div class="layui-col-xs1">
+            <a href="/"><img class="top-nav-logo" src="/img/logo.png"></a>
+        </div>
+        <div class="layui-col-xs8">
+            <ul class="top-nav-menu layui-nav">
+                <li class="layui-nav-item"><a href="/choose.html">Choice</a></li>
+                <li class="layui-nav-item layui-this" style="display: none">
+                    <a href="javascript:;">首页</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="">选项1</a></dd>
+                        <dd><a href="">选项2</a></dd>
+                        <dd><a href="">选项3</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item" style="display: none">
+                    <a href="javascript:;">解决方案</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="">移动模块</a></dd>
+                        <dd><a href="">后台模版</a></dd>
+                        <dd class="layui-this"><a href="">选中项</a></dd>
+                        <dd><a href="">电商平台</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+        <div class="layui-col-xs3" style="display: none">
+            <ul class="top-nav-user layui-nav">
+                <li class="layui-nav-item">
+                    <a href="">个人中心<span class="layui-badge">9</span></a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href=""><img src="" class="layui-nav-img">我</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;">修改信息</a></dd>
+                        <dd><a href="javascript:;">安全管理<span class="layui-badge-dot"></span></a></dd>
+                        <dd><a href="javascript:;">退出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="sec-nav">
+    <div class="layui-main layui-row">
+        <div class="layui-col-xs4">
+            <span class="sec-nav-where layui-breadcrumb" lay-separator="/">
+                <a href="/choose.html">Chiose</a>
+                <a><cite>名片点赞</cite></a>
+            </span>
+        </div>
+        <div class="layui-col-xs4">
+            <span class="sec-nav-list layui-breadcrumb" lay-separator="|" style="display: none">
+              <a href="/chat">交流</a>
+              <a href="/skill">技艺</a>
+              <a href="/game">游戏</a>
+              <a href="/resource">共享</a>
+              <a href="/blog">博客</a>
+              <a href="secret">秘密</a>
+            </span>
+        </div>
+        <div class="layui-col-xs3">
+            <input type="text" class="layui-input search_input" lay-verify="title" autocomplete="off"
+                   placeholder="请输入...">
+        </div>
+        <div class="layui-col-xs1">
+            <a class="layui-icon layui-btn search_btn">&#xe615;</a>
+        </div>
+    </div>
+</div>
+<div class="main-content layui-main">
+    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+        <ul class="layui-tab-title">
+            <li class="layui-this">名片点赞</li>
+        </ul>
+        <div class="layui-tab-content" style="height: 100px;">
+            <div class="layui-tab-item layui-show  layui-row layui-form layui-form-pane">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">QQ</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="qqNum" lay-verify="required" placeholder="哎...输入QQ号码"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-inline">
+                        <a class="layui-icon layui-btn" id="submitMpz"><i
+                                class="layui-icon">&#xe618;</i> 提交申请</a>
+                    </div>
+                    <div class="layui-input-inline">
+                        <a class="layui-icon layui-btn layui-btn-primary" id="getMpzState"><i
+                                class="layui-icon">&#xe615;</i> 查询状态</a>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-col-xs5">
+                    <textarea id="waitQqList" placeholder="没有正在等待的QQ号..." class="layui-textarea"></textarea>
+                </div>
+                <div class="layui-form-item layui-col-xs5">
+                    <div class="layui-input-inline">
+                        <img src="/img/logo.png" id="qrShow"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="layui-footer"></div>
+</body>
+</html>
