@@ -1,12 +1,14 @@
 package com.noadd.myapp.scheduling;
 
+import com.noadd.myapp.util.baseUtil.HttpUtil;
 import com.noadd.myapp.util.baseUtil.TimeUtil;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
-//@Component
+@Component
 public class TestTask {
 
-    @Scheduled(fixedRate = 6000)
+//    @Scheduled(fixedRate = 60000)
     /*
     @Scheduled(fixedRate = 6000) ：上一次开始执行时间点之后6秒再执行；
     @Scheduled(fixedDelay = 6000) ：上一次执行完毕时间点之后6秒再执行；
@@ -17,9 +19,17 @@ public class TestTask {
     }
 
     private int count = 0;
-
-    @Scheduled(cron = "*/6 * * * * ?")
-    private void process() {
-        System.out.println("this is scheduler task runing  " + (count++));
+    @Scheduled(cron = "0 0 0/6 1/1 * ? ")
+    private void process() throws Exception {
+        System.out.println("现在时间：" + TimeUtil.getCurrentDate(null));
+        HttpUtil.doGet("http://www.apesing.com/japi/mpz/add/815566704",null,null,null);
+        HttpUtil.doGet("http://www.apesing.com/japi/mpz/add/961064193",null,null,null);
+        HttpUtil.doGet("http://www.apesing.com/japi/mpz/add/291244026",null,null,null);
+        HttpUtil.doGet("http://www.apesing.com/japi/mpz/add/2048787831",null,null,null);
+        HttpUtil.doGet("http://www.apesing.com/japi/mpz/add/910615337",null,null,null);
+        HttpUtil.doGet("http://www.apesing.com/japi/mpz/add/1987047448",null,null,null);
+        HttpUtil.doGet("http://www.apesing.com/japi/mpz/add/747837043",null,null,null);
+        HttpUtil.doGet("http://www.apesing.com/japi/mpz/add/3539904402",null,null,null);
+        HttpUtil.doGet("http://www.apesing.com/japi/mpz/add/951423080",null,null,null);
     }
 }
