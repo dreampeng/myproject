@@ -18,8 +18,7 @@ public class TestTask {
         System.out.println("现在时间：" + TimeUtil.getCurrentDate(null));
     }
 
-    private int count = 0;
-    @Scheduled(cron = "0 0 0/6 1/1 * ? ")
+    @Scheduled(cron = "0 0 0/1 1/1 * ? ")
     private void process() throws Exception {
         System.out.println("现在时间：" + TimeUtil.getCurrentDate(null));
         HttpUtil.doGet("http://www.apesing.com/japi/mpz/add/815566704",null,null,null);
