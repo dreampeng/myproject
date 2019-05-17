@@ -42,7 +42,8 @@ public class ThreadTemp implements Runnable {
         header.put("Cache-Control", "max-age=0");
         header.put("Accept-Encoding", "gzip, deflate");
         header.put("Accept-Language", "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2");
-        String filePath = Objects.requireNonNull(FileUtil.class.getClassLoader().getResource("addr.txt")).getPath();
+//        String filePath = Objects.requireNonNull(FileUtil.class.getClassLoader().getResource("addr.txt")).getPath();
+        String filePath = "/opt/addr.txt";
         List<String> iPath = FileUtil.readFileByLine(filePath);
         iPath.forEach(str -> {
             String hashSaltStr;

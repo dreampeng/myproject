@@ -9,6 +9,12 @@ public class MessageUtil {
             case "0000":
                 msg = "请求成功";
                 break;
+            case "8000":
+                msg = "等待池已满，请骚后再试";
+                break;
+            case "8999":
+                msg = "系统密码错误";
+                break;
             case "9999":
                 msg = "系统错误请联系管理员";
                 break;

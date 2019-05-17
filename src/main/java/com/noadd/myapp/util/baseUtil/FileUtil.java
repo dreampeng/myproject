@@ -198,4 +198,29 @@ public class FileUtil {
         }
         return arrayList;
     }
+
+
+    /**
+     * 文本追加
+     *
+     * @param filePath 文本地址
+     * @param conent   新增内容
+     */
+    public static void insert(String filePath, String conent) {
+        BufferedWriter out = null;
+        try {
+            out = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(filePath, true)));
+            out.write(conent);
+        } catch (Exception ignored) {
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
