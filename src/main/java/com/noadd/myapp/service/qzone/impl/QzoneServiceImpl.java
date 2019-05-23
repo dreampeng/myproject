@@ -21,8 +21,8 @@ import java.util.List;
  **/
 @Service
 public class QzoneServiceImpl implements QzoneService {
-        private static String PATH = "/opt/www/qrcode/";
-//    private static String PATH = "E:/code/myproject/target/myapp-0.0.1-SNAPSHOT/qrcode/";
+    private static String PATH = "/opt/www/qrcode/";
+//        private static String PATH = "E:/code/myproject/target/myapp-0.0.1-SNAPSHOT/qrcode/";
     private final RedisManager redisManager;
     private static String COOKIEPRE = "QZCOOKIE";
     private static String MZSLIST = "MZSLIST";
@@ -104,6 +104,7 @@ public class QzoneServiceImpl implements QzoneService {
                         if (result == -2) {
                             System.out.println("报错QQ：" + qq);
                         }
+                        qzoneUtil.headLike();
                     } catch (Exception e) {
                         e.printStackTrace();
                         logToMail.error("秒赞报错", e);

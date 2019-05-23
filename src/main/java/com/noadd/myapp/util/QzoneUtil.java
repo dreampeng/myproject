@@ -10,7 +10,10 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class QzoneUtil {
@@ -702,8 +705,7 @@ public class QzoneUtil {
                     temp.put("unikey", unikey);
                     temp.put("curkey", curkey);
                     result.add(temp);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (Exception ignored) {
                 }
             }
         } else if (-10001 == (int) object.get("code")) {
@@ -725,6 +727,68 @@ public class QzoneUtil {
             if (doLike(uin, key, appid, unikey, curkey, true)) {
                 System.out.println(uin + "----" + key);
             }
+        }
+    }
+
+    /**
+     * {
+     * "fuin": 910615337,
+     * "nick": "           浮沉",
+     * "portrait": "http://qlogo2.store.qq.com/qzone/910615337/910615337/30",
+     * "gender": "男",
+     * "constellation": "白羊座",
+     * "addr": "江北",
+     * "if_qq_friend": 1,
+     * "if_special_care": 0,
+     * "is_special_vip": false
+     * }
+     *
+     * @return
+     * @throws Exception
+     */
+    public JSONArray headLikeList() throws Exception {
+        String url = "https://h5.qzone.qq.com/proxy/domain/users.qzone.qq.com/cgi-bin/likes/get_like_list_app";
+        Map<String, String> param = new HashMap<>();
+        param.put("qzonetoken", (String) cookieMap.get("qzonetoken"));
+        param.put("g_tk", getG_tk());
+        param.put("uin", (String) cookieMap.get("qq_num"));
+        param.put("unikey", "http://user.qzone.qq.com/" + cookieMap.get("qq_num"));
+        param.put("home","1");
+        param.put("rd", "0." + StringUtil.getRandomNumStr(17));
+        String retStr = HttpUtil.doGet(url, param, null, context);
+        int startIndex = retStr.indexOf("(");
+        int endIndex = retStr.lastIndexOf(")");
+        String json = retStr.substring(startIndex + 1, endIndex);
+        return JSONObject.parseObject(json).getJSONObject("data").getJSONArray("like_data").getJSONObject(0).getJSONArray("data");
+    }
+
+    public void headDoLike(String qq) {
+        String url = "https://user.qzone.qq.com/proxy/domain/w.qzone.qq.com/cgi-bin/likes/internal_dolike_app";
+        Map<String, String> param = new HashMap<>();
+        param.put("qzonetoken", (String) cookieMap.get("qzonetoken"));
+        param.put("g_tk", getG_tk());
+        String dataUrl = "http://user.qzone.qq.com/" + qq;
+        Map<String, String> data = new HashMap<>();
+        data.put("appid", "7030");
+        data.put("fupdate", "1");
+        data.put("opuin", (String) cookieMap.get("qq_num"));
+        data.put("unikey", dataUrl);
+        data.put("curkey", dataUrl);
+        data.put("format", "json");
+        Map<String, String> header = new HashMap<>();
+        header.put("Content-Type", "application/x-www-form-urlencoded");
+        HttpUtil.doPost(url, param, data, header, context);
+    }
+
+    public void headLike() {
+        try {
+            JSONArray array = headLikeList();
+            array.forEach(o -> {
+                JSONObject json = (JSONObject) o;
+                headDoLike(json.getString("fuin"));
+            });
+        } catch (Exception e) {
+            System.out.println("获取首页赞列表失败，" + cookieMap.get("qq_num"));
         }
     }
 
