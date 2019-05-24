@@ -186,11 +186,10 @@ public class QzoneUtil {
                 }
                 total = ss.getInteger("total");
             } catch (Exception e) {
-                e.printStackTrace();
                 break;
             }
             System.out.println("已取到" + page++ + "页，共" + ss.getJSONArray("msgList").size() + "条，总共" + total + "条");
-            if ((page * limit) > total || maxPage >= page) {
+            if ((page * limit) > total || maxPage < page) {
                 break;
             }
         }
@@ -385,7 +384,7 @@ public class QzoneUtil {
      *
      * @return Map
      */
-    private Map<String, Object> getCookieMap() {
+    public Map<String, Object> getCookieMap() {
         if (cookieMap == null) {
             cookieMap = new HashMap<>();
         }
@@ -656,6 +655,38 @@ public class QzoneUtil {
         return HttpUtil.doPost(url, param, data, header, context).contains("\"msg\":\"succ\"");
     }
 
+
+    /**
+     * 赞说说
+     *
+     * @param qq     被赞QQ
+     * @param tid    说说ID
+     * @param isLike 赞或取消
+     */
+    public boolean doLike(String fromQq,String qq, String tid, boolean isLike) {
+        String url = "https://user.qzone.qq.com/proxy/domain/w.qzone.qq.com/cgi-bin/likes/";
+        if (isLike) {
+            url += "internal_dolike_app";
+        } else {
+            url += "internal_unlike_app";
+        }
+        Map<String, String> param = new HashMap<>();
+        param.put("qzonetoken", (String) cookieMap.get("qzonetoken"));
+        param.put("g_tk", getG_tk());
+        Map<String, String> data = new HashMap<>();
+        String curkey = "http://user.qzone.qq.com/" + qq + "/mood/" + tid + ".1";
+        data.put("qzreferrer", "https://user.qzone.qq.com/"+qq);
+        data.put("curkey", curkey);
+        data.put("unikey", curkey);
+        data.put("opuin", fromQq);
+        data.put("from", "-100");
+        data.put("fupdate", "1");
+        data.put("face", "0");
+        Map<String, String> header = new HashMap<>();
+        header.put("Content-Type", "application/x-www-form-urlencoded");
+        return HttpUtil.doPost(url, param, data, header, context).contains("\"message\":\"succ\"");
+    }
+
     /**
      * 刷新最新说说 20条
      *
@@ -753,7 +784,7 @@ public class QzoneUtil {
         param.put("g_tk", getG_tk());
         param.put("uin", (String) cookieMap.get("qq_num"));
         param.put("unikey", "http://user.qzone.qq.com/" + cookieMap.get("qq_num"));
-        param.put("home","1");
+        param.put("home", "1");
         param.put("rd", "0." + StringUtil.getRandomNumStr(17));
         String retStr = HttpUtil.doGet(url, param, null, context);
         int startIndex = retStr.indexOf("(");

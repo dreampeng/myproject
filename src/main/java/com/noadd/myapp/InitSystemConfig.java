@@ -16,7 +16,7 @@ public class InitSystemConfig implements CommandLineRunner {
     QzoneService qzoneService;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args)  {
         qzoneService.miaoZhan();
         qzoneService.addMiaoZhan();
 //        qzoneService.zdZhan();

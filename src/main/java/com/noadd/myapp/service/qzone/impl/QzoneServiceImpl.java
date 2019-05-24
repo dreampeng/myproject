@@ -7,6 +7,7 @@ import com.noadd.myapp.mailservice.MyMailService;
 import com.noadd.myapp.redis.RedisManager;
 import com.noadd.myapp.service.qzone.QzoneService;
 import com.noadd.myapp.util.QzoneUtil;
+import com.noadd.myapp.util.baseUtil.StringUtil;
 import org.apache.http.cookie.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
@@ -22,8 +24,9 @@ import java.util.List;
 @Service
 public class QzoneServiceImpl implements QzoneService {
     private static String PATH = "/opt/www/qrcode/";
-//        private static String PATH = "E:/code/myproject/target/myapp-0.0.1-SNAPSHOT/qrcode/";
+    //        private static String PATH = "E:/code/myproject/target/myapp-0.0.1-SNAPSHOT/qrcode/";
     private final RedisManager redisManager;
+    private final MyMailService myMailService;
     private static String COOKIEPRE = "QZCOOKIE";
     private static String MZSLIST = "MZSLIST";
     private static String ZDSLIST = "ZDSLIST";
@@ -31,7 +34,8 @@ public class QzoneServiceImpl implements QzoneService {
     private static String ZDWAIT = "ZDWAIT";
 
     @Autowired
-    public QzoneServiceImpl(RedisManager redisManager) {
+    public QzoneServiceImpl(RedisManager redisManager, MyMailService myMailService) {
+        this.myMailService = myMailService;
         this.redisManager = redisManager;
     }
 
@@ -207,28 +211,51 @@ public class QzoneServiceImpl implements QzoneService {
                 if (qqList == null) {
                     qqList = new ArrayList<>();
                 }
+                if (qqList.size() < 1) {
+                    continue;
+                }
                 Iterator<String> it = qqList.iterator();
                 while (it.hasNext()) {
                     String qq = it.next();
                     try {
                         List<Object> cookieLists = redisManager.selects(COOKIEPRE + "*");
                         if (cookieLists != null && cookieLists.size() > 0) {
-                            List<Cookie> cookieMapList = (List<Cookie>) cookieLists.get(0);
-                            if (cookieMapList == null) {
-                                continue;
-                            }
-                            QzoneUtil qzoneUtil = new QzoneUtil(cookieMapList);
-                            JSONObject alls = qzoneUtil.getAllSs(qq, 1);
-                            List<String> tids = (List<String>) alls.get("tidList");
-                            for (String tid : tids) {
-                                for (Object cookieList : cookieLists) {
-                                    QzoneUtil qzoneUtilTemp = new QzoneUtil((List<Cookie>) cookieList);
+                            StringBuilder stringBuilder = new StringBuilder();
+                            for (Object cookieList : cookieLists) {
+                                if (cookieList == null) {
+                                    continue;
                                 }
+                                QzoneUtil qzoneUtilTemp = new QzoneUtil((List<Cookie>) cookieList);
+                                String loginQq = (String) qzoneUtilTemp.getCookieMap().get("qq_num");
+                                JSONObject alls = qzoneUtilTemp.getAllSs(qq, 1);
+                                String code = alls.getString("code");
+                                if ("-10031".equals(code)) {
+                                    System.out.println(loginQq + "对于" + qq + "没有访问权限");
+                                    stringBuilder.append(loginQq).append("没有访问权限");
+                                } else if ("0".equals(code)) {
+                                    List<String> tids = (List<String>) alls.get("tidList");
+                                    tids.forEach(tid -> {
+                                        if (qzoneUtilTemp.doLike(loginQq, qq, tid, true)) {
+                                            System.out.println(loginQq + "----" + qq + "----" + tid);
+                                        }
+                                    });
+                                    stringBuilder.append(loginQq).append("给你点赞").append(tids.size()).append("条\n");
+                                } else if ("-3000".equals(code)) {
+                                    myMailService.sendSimpleMail(loginQq + "@qq.com",
+                                            "秒赞登录已经失效了哦，请重新登录",
+                                            "你在 http://www.apesing.com/qzone/ 的登录状态已经失效了哦，" +
+                                                    "请访问地址重新登录");
+                                }
+                            }
+                            if (!StringUtil.isEmpty(stringBuilder.toString())) {
+                                myMailService.sendSimpleMail(qq + "@qq.com",
+                                        "说说点赞信息反馈",
+                                        stringBuilder.toString());
                             }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        logToMail.error("秒赞报错", e);
+                        logToMail.error("自动点赞报错", e);
                     }
                     it.remove();
                 }
